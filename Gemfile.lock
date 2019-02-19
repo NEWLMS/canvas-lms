@@ -24,6 +24,13 @@ GIT
       thrift_client (>= 0.7.1, < 0.10)
 
 GIT
+  remote: https://github.com/pinak1180/capistrano-canvas
+  revision: ddfc521dca9d49e31c48c52b4fffb0f92812abca
+  specs:
+    capistrano-canvas (1.0.6)
+      capistrano (~> 3.11)
+
+GIT
   remote: https://github.com/rails-api/active_model_serializers.git
   revision: 61882e1e4127facfe92e49057aec71edbe981829
   ref: 61882e1e4127facfe92e49057aec71edbe981829
@@ -239,12 +246,6 @@ PATH
     canvas_unzip (0.0.1)
       canvas_mimetype_fu
       rubyzip (~> 1.2)
-
-PATH
-  remote: gems/capistrano-canvas
-  specs:
-    capistrano-canvas (1.0.6)
-      capistrano (~> 3.11)
 
 PATH
   remote: gems/csv_diff

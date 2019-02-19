@@ -182,7 +182,7 @@ gem 'workflow', path: 'gems/workflow'
 gem 'dogstatsd-ruby', '3.3.0'
 group :deployment do
   gem 'capistrano', '~> 3.11'
-  gem 'capistrano-canvas', path: 'gems/capistrano-canvas'
+  gem 'capistrano-canvas', git: 'https://github.com/pinak1180/capistrano-canvas'
   gem 'capistrano-rbenv', '~> 2.1', require: false
   gem 'capistrano-bundler', require: false
   gem 'capistrano-rails', '~> 1.3.0', require: false
