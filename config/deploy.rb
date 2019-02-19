@@ -1,17 +1,13 @@
-set :application, 'ems'
-set :repo_url,  'git@github.com:NEWLMS/EMS32.git'
-set :deploy_to, '/var/www/applications/ems'
+set :application, 'canvas-lms'
+set :repo_url,  'git@github.com:NEWLMS/canvas-lms.git'
+set :deploy_to, '/var/www/applications/canvas-lms'
 
 set :rbenv_type, :user
 set :rbenv_ruby, File.read('.ruby-version').strip
 set :rbenv_prefix, "RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{fetch(:rbenv_ruby)} #{fetch(:rbenv_path)}/bin/rbenv exec"
-set :rbenv_map_bins, %w[rake gem bundle ruby rails sidekiq sidekiqctl haml]
-set :rbenv_roles, %i[app web sidekiq]
+set :rbenv_map_bins, %w[rake gem bundle ruby rails  haml]
+set :rbenv_roles, %i[app web]
 
-set :whenever_identifier, -> { "#{fetch(:application)}_#{fetch(:stage)}" }
-set :whenever_roles, %i[app sidekiq]
-set :sidekiq_monit_conf_dir, '/etc/monit/conf.d'
-set :sidekiq_monit_use_sudo, true
 
 # Capistrano seems to assume shared dir under
 # /var/www/ems - overiding default_shared path
@@ -26,7 +22,7 @@ set :log_level, :debug
 
 SSHKit.config.command_map[:rake]  = 'bundle exec rake'
 SSHKit.config.command_map[:rails] = 'bundle exec rails'
-set :linked_files, %w[config/database.yml .env]
+set :linked_files, %w[config/database.yml]
 set :linked_dirs, %w[
   log
   public/system
