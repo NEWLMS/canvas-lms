@@ -1117,7 +1117,7 @@ DEPENDENCIES
   docile (= 1.1.5)
   dogstatsd-ruby (= 3.3.0)
   dotenv (= 2.2.1)
-  dress_code (= 1.2.0)
+  dress_code (~> 1.2)
   encrypted_cookie_store-instructure (= 1.2.8)
   escape_code (= 0.2)
   et-orbi (= 1.0.8)

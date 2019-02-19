@@ -34,7 +34,6 @@ set :linked_dirs, %w[
   tmp/pids
   tmp/sockets
   vendor/bundle
-  node_modules
 ]
 
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
