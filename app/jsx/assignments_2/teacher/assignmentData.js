@@ -40,6 +40,8 @@ export const EnvShape = shape({
 export const TEACHER_QUERY = gql`
   query GetAssignment($assignmentLid: ID!) {
     assignment(id: $assignmentLid) {
+      __typename
+      id
       lid: _id
       gid: id
       name
@@ -78,16 +80,9 @@ export const TEACHER_QUERY = gql`
             name
           }
         }
-        assignmentGroupsConnection {
+        assignmentGroupsConnection(first: 0) {
           pageInfo {
-            startCursor
-            endCursor
             hasNextPage
-            hasPreviousPage
-          }
-          nodes {
-            lid: _id
-            name
           }
         }
       }
@@ -137,7 +132,9 @@ export const TEACHER_QUERY = gql`
           gid: id
           lid: _id
           submissionStatus
+          grade
           gradingStatus
+          score
           state
           excused
           latePolicyStatus
@@ -146,6 +143,10 @@ export const TEACHER_QUERY = gql`
             gid: id
             lid: _id
             name
+            shortName
+            sortableName
+            avatarUrl
+            email
           }
         }
       }
@@ -153,11 +154,86 @@ export const TEACHER_QUERY = gql`
   }
 `
 
+const assignmentGroup = gql`
+  fragment CourseAssignmentGroups on AssignmentGroupConnection {
+    nodes {
+      lid: _id
+      gid: id
+      name
+      __typename
+    }
+  }
+`
+
+export const COURSE_ASSIGNMENT_GROUPS_QUERY = gql`
+  query GetCourseAssignmentGroups($courseId: ID!, $cursor: String) {
+    course(id: $courseId) {
+      lid: _id
+      gid: id
+      assignmentGroupsConnection(first: 200, after: $cursor) {
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+        ...CourseAssignmentGroups
+      }
+    }
+  }
+  ${assignmentGroup}
+`
+export const COURSE_ASSIGNMENT_GROUPS_QUERY_LOCAL = gql`
+  query GetCourseAssignmentGroupsLocal($courseId: ID!) {
+    course(id: $courseId) @client {
+      lid: _id
+      gid: id
+      assignmentGroupsConnection(first: 200) {
+        ...CourseAssignmentGroups
+      }
+    }
+  }
+  ${assignmentGroup}
+`
+
 export const SET_WORKFLOW = gql`
   mutation SetWorkflow($id: ID!, $workflow: AssignmentState!) {
     updateAssignment(input: {id: $id, state: $workflow}) {
       assignment {
+        __typename
+        id
+        state
+      }
+    }
+  }
+`
+
+export const SAVE_ASSIGNMENT = gql`
+  mutation SaveAssignment(
+    $id: ID!
+    $name: String
+    $description: String
+    $dueAt: DateTime
+    $pointsPossible: Float
+    $state: AssignmentState
+  ) {
+    updateAssignment(
+      input: {
+        id: $id
+        name: $name
+        description: $description
+        dueAt: $dueAt
+        pointsPossible: $pointsPossible
+        state: $state
+      }
+    ) {
+      assignment {
+        __typename
+        id
         lid: _id
+        gid: id
+        dueAt
+        name
+        description
+        pointsPossible
         state
       }
     }
@@ -192,6 +268,7 @@ export const OverrideShape = shape({
   lockAt: string,
   unlockAt: string,
   submissionTypes: arrayOf(string), // currently copied from the asisgnment
+  allowedAttempts: number, // currently copied from the assignment
   allowedExtensions: arrayOf(string), // currently copied from the assignment
   set: shape({
     lid: string,
@@ -203,14 +280,20 @@ export const OverrideShape = shape({
 const UserShape = shape({
   lid: string,
   gid: string,
-  name: string
+  name: string,
+  shortName: string,
+  sortableName: string,
+  avatarUrl: string,
+  email: string
 })
 
 const SubmissionShape = shape({
   gid: string,
   lid: string,
   submissionStatus: oneOf(['resubmitted', 'missing', 'late', 'submitted', 'unsubmitted']),
+  grade: string,
   gradingStatus: oneOf([null, 'excused', 'needs_review', 'needs_grading', 'graded']),
+  score: number,
   state: oneOf(['submitted', 'unsubmitted', 'pending_review', 'graded', 'deleted']),
   excused: bool,
   latePolicyStatus: oneOf([null, 'missing']),
@@ -225,8 +308,8 @@ export const TeacherAssignmentShape = shape({
   dueAt: string,
   lockAt: string,
   unlockAt: string,
-  description: string.isRequired,
-  state: oneOf(['published', 'unpublished']).isRequired,
+  description: string,
+  state: oneOf(['published', 'unpublished', 'deleted']).isRequired,
   assignmentGroup: AssignmentGroupShape.isRequired,
   modules: arrayOf(ModuleShape).isRequired,
   course: CourseShape.isRequired,
@@ -240,3 +323,14 @@ export const TeacherAssignmentShape = shape({
     nodes: arrayOf(SubmissionShape)
   }).isRequired
 })
+
+// custom proptype validator
+// requires the property if the component's prop.variant === 'detail'
+// this is used in components that have summary and detail renderings
+export function requiredIfDetail(props, propName, componentName) {
+  if (!props[propName] && props.variant === 'detail') {
+    return new Error(
+      `The prop ${propName} is required on ${componentName} if the variant is 'detail'`
+    )
+  }
+}

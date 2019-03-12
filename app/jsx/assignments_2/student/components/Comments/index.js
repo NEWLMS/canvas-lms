@@ -17,17 +17,47 @@
  */
 
 import React from 'react'
-import CommentTextArea from './CommentTextArea'
-import CommentContent from './CommentContent'
-import {StudentAssignmentShape} from '../../assignmentData'
+import CommentsContainer from './CommentsContainer'
+import {Query} from 'react-apollo'
+import {SUBMISSION_COMMENT_QUERY, StudentAssignmentShape} from '../../assignmentData'
+import LoadingIndicator from '../LoadingIndicator'
+import GenericErrorPage from '../../../../shared/components/GenericErrorPage/index'
+import ErrorBoundary from '../../../../shared/components/ErrorBoundary'
+import errorShipUrl from '../../SVG/ErrorShip.svg'
 
 function Comments(props) {
-  const comments = props.assignment.submissionsConnection.nodes[0].commentsConnection.nodes
   return (
-    <div data-test-id="comments-container">
-      <CommentTextArea />
-      <CommentContent comments={comments} />
-    </div>
+    <Query
+      query={SUBMISSION_COMMENT_QUERY}
+      variables={{submissionId: props.assignment.submissionsConnection.nodes[0].id.toString()}}
+    >
+      {({loading, error, data}) => {
+        if (loading) return <LoadingIndicator />
+        if (error) {
+          return (
+            <GenericErrorPage
+              imageUrl={errorShipUrl}
+              errorSubject="Assignments 2 Student initial query error"
+              errorCategory="Assignments 2 Student Error Page"
+            />
+          )
+        }
+        return (
+          <ErrorBoundary
+            errorComponent={
+              <GenericErrorPage
+                imageUrl={errorShipUrl}
+                errorCategory="Assignments 2 Student Comment Error Page"
+              />
+            }
+          >
+            <div data-testid="comments-container">
+              <CommentsContainer comments={data.submissionComments.commentsConnection.nodes} />
+            </div>
+          </ErrorBoundary>
+        )
+      }}
+    </Query>
   )
 }
 

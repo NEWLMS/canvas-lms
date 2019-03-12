@@ -18,16 +18,23 @@
 
 import React from 'react'
 import {render} from 'react-testing-library'
+import {MockedProvider} from 'react-apollo/test-utils'
 import {mockAssignment} from '../../test-utils'
 import Header from '../Header'
 
-it('renders basic assignment information', () => {
-  const assignment = mockAssignment()
-  const {container, getByTestId} = render(<Header assignment={assignment} />)
+describe('assignments 2 teacher view header', () => {
+  it('renders basic assignment information', () => {
+    const assignment = mockAssignment()
+    const {getByTestId} = render(
+      <MockedProvider>
+        <Header assignment={assignment} onChangeAssignment={() => {}} onSetWorkstate={() => {}} />
+      </MockedProvider>
+    )
 
-  expect(getByTestId('AssignmentType')).toBeInTheDocument()
-  expect(getByTestId('AssignmentModules')).toBeInTheDocument()
-  expect(getByTestId('AssignmentGroup')).toBeInTheDocument()
-  expect(container).toHaveTextContent(assignment.name)
-  expect(getByTestId('teacher-toolbox')).toBeInTheDocument()
+    expect(getByTestId('AssignmentType')).toBeInTheDocument()
+    expect(getByTestId('AssignmentModules')).toBeInTheDocument()
+    expect(getByTestId('AssignmentGroup')).toBeInTheDocument()
+    expect(getByTestId('AssignmentName')).toBeInTheDocument()
+    expect(getByTestId('teacher-toolbox')).toBeInTheDocument()
+  })
 })

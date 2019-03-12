@@ -209,13 +209,8 @@ class SubmissionComment < ActiveRecord::Base
       return !provisional || (assignment.grades_published? && author_id == assignment.final_grader_id)
     end
 
-    # At this point, deny all non-graders, leaving us with only provisional graders/
-    # moderated assignments
-    return false unless submission.user_can_read_grade?(user, session)
-
-    # We've checked all possible cases for non-moderated assignments at this point, so
-    # anything past here should be moderated
-    return false unless assignment.moderated_grading?
+    # For non-moderated assignments, check whether the user can view grades
+    return submission.user_can_read_grade?(user, session) unless assignment.moderated_grading?
 
     # If we made it here, the current user is a provisional grader viewing a
     # moderated assignment, and the comment is by someone else.
@@ -267,6 +262,10 @@ class SubmissionComment < ActiveRecord::Base
     read_attribute(:context) || self.submission.assignment.context rescue nil
   end
 
+  def parse_attachment_ids
+    (self.attachment_ids || "").split(",").map(&:to_i)
+  end
+
   def attachment_ids=(ids)
     # raise "Cannot set attachment id's directly"
   end
@@ -277,7 +276,7 @@ class SubmissionComment < ActiveRecord::Base
     # access to files in another user's comments, since they're all being held
     # on the assignment for now.
     attachments ||= []
-    old_ids = (self.attachment_ids || "").split(",").map{|id| id.to_i}
+    old_ids = parse_attachment_ids
     write_attribute(:attachment_ids, attachments.select { |a|
       old_ids.include?(a.id) ||
       a.recently_created ||
@@ -299,7 +298,7 @@ class SubmissionComment < ActiveRecord::Base
 
   def attachments
     return Attachment.none unless attachment_ids.present?
-    ids = attachment_ids.split(",").map(&:to_i)
+    ids = parse_attachment_ids
     attachments = submission.assignment.attachments.where(id: ids)
   end
 

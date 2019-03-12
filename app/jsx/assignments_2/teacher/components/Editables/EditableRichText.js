@@ -23,6 +23,7 @@ import apiUserContent from 'compiled/str/apiUserContent'
 import InPlaceEdit from '@instructure/ui-editable/lib/components/InPlaceEdit'
 import Button from '@instructure/ui-buttons/lib/components/Button'
 import ScreenReaderContent from '@instructure/ui-a11y/lib/components/ScreenReaderContent'
+import Text from '@instructure/ui-elements/lib/components/Text'
 import View from '@instructure/ui-layout/lib/components/View'
 import ArrowDown from '@instructure/ui-icons/lib/Line/IconArrowOpenDown'
 import {omitProps} from '@instructure/ui-utils/lib/react/passthroughProps'
@@ -89,14 +90,23 @@ export default class EditableRichText extends React.Component {
     }
   }
 
+  testDiv = null
+
   renderView = () => {
     const html = this.state.htmlValue
+    // if the htmlValue is nothing but whitespace,
+    // show the placeholder
+    if (!this.testDiv) {
+      this.testDiv = document.createElement('div')
+    }
+    this.testDiv.innerHTML = html
+    const hasContent = !!this.testDiv.textContent.trim()
     return (
       <View as="div" margin="small 0">
-        {html ? (
+        {hasContent || this.props.readOnly ? (
           <div dangerouslySetInnerHTML={{__html: html}} />
         ) : (
-          <div>{this.props.placeholder}</div>
+          <Text color="secondary">{this.props.placeholder}</Text>
         )}
       </View>
     )
@@ -145,9 +155,14 @@ export default class EditableRichText extends React.Component {
   }
 
   handleEditorBlur = event => {
-    // HACK: if the user clicked on a toolbar button that opened a dialog,
+    // Focus isn't managed well in the RCE, so a couple hacks
+    // 1. if the user clicked on a toolbar button that opened a dialog,
     // the activeElement will be a child of the body, and not the our page
-    if (document.getElementById('assignments_2').contains(document.activeElement)) {
+    // 2. if focus is on the body, then we've left the editor altogether
+    if (
+      document.getElementById('assignments_2').contains(document.activeElement) ||
+      document.activeElement === document.body
+    ) {
       if (this._textareaRef) {
         const txt = RichContentEditor.callOnRCE(this._textareaRef, 'get_code')
         this.setState({value: txt})
