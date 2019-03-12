@@ -26,7 +26,7 @@ set :linked_files, %w[config/database.yml config/amazon_s3.yml
   config/delayed_jobs.yml config/domain.yml
   config/file_store.yml config/outgoing_mail.yml
   config/security.yml config/external_migration.yml
-  config/dynamic_settings.yml]
+  config/dynamic_settings.yml config/cache_store.yml config/redis.yml]
 set :linked_dirs, %w[
   log
   public/system
