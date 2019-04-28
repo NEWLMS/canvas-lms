@@ -419,6 +419,33 @@ describe SpeedGrader::Assignment do
       end
     end
 
+    describe "submission posting" do
+      let(:submission_json) do
+        json = SpeedGrader::Assignment.new(@assignment, @teacher).json
+        json[:submissions].detect { |submission| submission[:user_id] == @student_1.id.to_s }
+      end
+
+      context "when post policies are enabled" do
+        before(:each) do
+          @course.enable_feature!(:post_policies)
+        end
+
+        it "includes the submission's posted-at date in the posted_at field" do
+          posted_at_time = 1.day.ago
+          @assignment.submission_for_student(@student_1).update!(posted_at: posted_at_time)
+          expect(submission_json["posted_at"]).to eq posted_at_time
+        end
+
+        it "includes nil for the posted_at field if the submission is not posted" do
+          expect(submission_json["posted_at"]).to be nil
+        end
+      end
+
+      it "omits the posted_at field when post policies are not enabled" do
+        expect(submission_json).not_to have_key(:posted_at)
+      end
+    end
+
     describe 'attachment JSON' do
       let(:viewed_at_time) { Time.zone.now }
 
@@ -2738,6 +2765,31 @@ describe SpeedGrader::Assignment do
       it 'sets anonymize_graders to false in the response' do
         expect(json['anonymize_graders']).to be false
       end
+    end
+  end
+
+  describe "post policies" do
+    let_once(:assignment) { @course.assignments.create!(title: "hi") }
+    let(:json) { SpeedGrader::Assignment.new(assignment, @teacher).json }
+
+    context "when post policies are enabled" do
+      before(:once) do
+        @course.enable_feature!(:post_policies)
+      end
+
+      it "sets post_manually to true in the response if the assignment is manually-posted" do
+        assignment.ensure_post_policy(post_manually: true)
+        expect(json['post_manually']).to be true
+      end
+
+      it "sets post_manually to false in the response if the assignment is not manually-posted" do
+        assignment.ensure_post_policy(post_manually: false)
+        expect(json['post_manually']).to be false
+      end
+    end
+
+    it "does not set post_manually in the response when post policies are not enabled" do
+      expect(json).not_to have_key('post_manually')
     end
   end
 end

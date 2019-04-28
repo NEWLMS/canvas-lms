@@ -19,83 +19,96 @@
 import React from 'react'
 import {render, fireEvent} from 'react-testing-library'
 import AssignmentName from '../AssignmentName'
+import AssignmentFieldValidator from '../../../AssignentFieldValidator'
+
+const afv = new AssignmentFieldValidator()
+function validate() {
+  return afv.validate(...arguments)
+}
+function errorMessage() {
+  return afv.errorMessage(...arguments)
+}
+
+function renderAssignmentName(props) {
+  return render(
+    <AssignmentName
+      mode="view"
+      onChange={() => {}}
+      onChangeMode={() => {}}
+      onValidate={validate}
+      invalidMessage={errorMessage}
+      name="the name"
+      {...props}
+    />
+  )
+}
 
 describe('AssignmentName', () => {
   it('renders the value in view mode', () => {
-    const {getByText} = render(
-      <AssignmentName mode="view" onChange={() => {}} onChangeMode={() => {}} name="the name" />
-    )
+    const {getByText} = renderAssignmentName()
 
     expect(getByText('the name')).toBeInTheDocument()
   })
 
   it('renders the value in edit mode', () => {
-    const {container} = render(
-      <AssignmentName mode="edit" onChange={() => {}} onChangeMode={() => {}} name="the name" />
-    )
+    const {getByDisplayValue} = renderAssignmentName({mode: 'edit'})
 
-    expect(container.querySelector('input[value="the name"]')).toBeInTheDocument()
+    expect(getByDisplayValue('the name')).toBeInTheDocument()
   })
 
   it('shows error message with invalid value', () => {
-    const {getByText} = render(
-      <AssignmentName mode="edit" onChange={() => {}} onChangeMode={() => {}} name="" />
-    )
+    const {getByText} = renderAssignmentName({mode: 'edit', name: ''})
 
     expect(getByText('Assignment name is required')).toBeInTheDocument()
   })
 
   it('shows the placeholder when the value is empty', () => {
-    const {getByText} = render(
-      <AssignmentName mode="view" onChange={() => {}} onChangeMode={() => {}} name="" />
-    )
+    const {getByText} = renderAssignmentName({name: ''})
 
     expect(getByText('Assignment name')).toBeInTheDocument()
-    expect(getByText('Assignment name is required')).toBeInTheDocument()
-  })
-
-  it('does not leave edit mode if missing the name', () => {
-    const onchangemode = jest.fn()
-    const {container, getByText} = render(
-      <div>
-        <AssignmentName mode="edit" onChange={() => {}} onChangeMode={onchangemode} name="" />
-        <span id="click-me" tabIndex="-1">
-          just here to get focus
-        </span>
-      </div>
-    )
-
-    const nameinput = container.querySelector('[data-testid="AssignmentName"] input')
-    nameinput.click()
-    container.querySelector('#click-me').focus()
-    expect(onchangemode).not.toHaveBeenCalled()
     expect(getByText('Assignment name is required')).toBeInTheDocument()
   })
 
   it('saves new value on Enter', () => {
     const onChange = jest.fn()
     const onChangeMode = jest.fn()
-    const {container} = render(
-      <AssignmentName mode="edit" onChange={onChange} onChangeMode={onChangeMode} name="the name" />
-    )
+    const {getByDisplayValue} = renderAssignmentName({
+      mode: 'edit',
+      onChange,
+      onChangeMode
+    })
 
-    const input = container.querySelector('input[value="the name"]')
+    const input = getByDisplayValue('the name')
     fireEvent.input(input, {target: {value: 'x'}})
     fireEvent.keyDown(input, {key: 'Enter', code: 13})
     expect(onChangeMode).toHaveBeenCalledWith('view')
     expect(onChange).toHaveBeenCalledWith('x')
   })
 
-  it('reverts to the old value on Escape', () => {
+  it('saves the new value on blur', () => {
     const onChange = jest.fn()
-    const {container} = render(
-      <AssignmentName mode="edit" onChange={onChange} onChangeMode={() => {}} name="the name" />
+    const onChangeMode = jest.fn()
+    const {container, getByDisplayValue} = render(
+      <div>
+        <AssignmentName
+          mode="edit"
+          onChange={onChange}
+          onChangeMode={onChangeMode}
+          onValidate={() => true}
+          invalidMessage={() => undefined}
+          name="the name"
+        />
+        <span id="focus-me" tabIndex="-1">
+          just here to get focus
+        </span>
+      </div>
     )
 
-    const input = container.querySelector('input[value="the name"]')
-    fireEvent.input(input, {target: {value: 'x'}})
-    fireEvent.keyDown(input, {key: 'Escape', code: 27})
-    expect(onChange).toHaveBeenCalledWith('x')
-    expect(onChange).toHaveBeenCalledWith('the name')
+    const input = getByDisplayValue('the name')
+    fireEvent.input(input, {target: {value: 'new name'}})
+    container.querySelector('#focus-me').focus()
+
+    expect(onChangeMode).toHaveBeenCalledWith('view')
+    expect(onChange).toHaveBeenCalledWith('new name')
   })
 })

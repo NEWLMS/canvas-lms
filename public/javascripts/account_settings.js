@@ -21,6 +21,8 @@ import I18n from 'i18n!account_settings'
 import $ from 'jquery'
 import htmlEscape from 'str/htmlEscape'
 import RichContentEditor from 'jsx/shared/rce/RichContentEditor'
+import axios from 'axios'
+import {setupCache} from 'axios-cache-adapter'
 import 'jqueryui/tabs'
 import globalAnnouncements from './global_announcements'
 import './jquery.ajaxJSON'
@@ -31,6 +33,8 @@ import './jquery.instructure_misc_plugins' // confirmDelete, showIf, /\.log/
 import './jquery.loadingImg'
 import './vendor/date' // Date.parse
 import './vendor/jquery.scrollTo'
+
+let reportsTabHasLoaded = false
 
   export function openReportDescriptionLink (event) {
     event.preventDefault();
@@ -117,25 +121,103 @@ import './vendor/jquery.scrollTo'
     globalAnnouncements.augmentView()
     globalAnnouncements.bindDomEvents()
 
-    $("#account_settings_tabs").tabs({
+    $('#account_settings_tabs')
+    .tabs({
       beforeActivate: (event, ui) => {
-        if (ui.newTab.context.id === 'tab-security-link') {
-          import('jsx/account_settings')
-            .then(({start}) => {
-              const splitContext = window.ENV.context_asset_string.split('_')
-              start(document.getElementById('tab-security'), {
-                context: splitContext[0],
-                contextId: splitContext[1],
-                isSubAccount: !ENV.ACCOUNT.root_account
-              });
+        if (ui.newTab.context.id === 'tab-reports-link' && !reportsTabHasLoaded) {
+          reportsTabHasLoaded = true
+          const splitContext = window.ENV.context_asset_string.split('_')
+          fetch(`/${splitContext[0]}s/${splitContext[1]}/reports_tab`).then(req => req.text()).then(html => {
+            $('#tab-reports').html(html)
+
+            $(".open_report_description_link").click(openReportDescriptionLink);
+
+            $(".run_report_link").click(function(event) {
+              event.preventDefault();
+              $(this).parent("form").submit();
+            });
+
+            $(".run_report_form").formSubmit({
+              resetForm: true,
+              beforeSubmit: function(data) {
+                $(this).loadingImage();
+                return true;
+              },
+              success: function(data) {
+                $(this).loadingImage('remove');
+                var report = $(this).attr('id').replace('_form', '');
+                $("#" + report).find('.run_report_link').hide()
+                  .end().find('.configure_report_link').hide()
+                  .end().find('.running_report_message').show();
+                $(this).parent(".report_dialog").dialog('close');
+              },
+              error: function(data) {
+                $(this).loadingImage('remove');
+                $(this).parent(".report_dialog").dialog('close');
+              }
+            });
+
+            $(".configure_report_link").click(function(event) {
+              event.preventDefault();
+              var data = $(this).data(),
+                $dialog = data.$report_dialog;
+              if (!$dialog) {
+                $dialog = data.$report_dialog = $(this).parent("td").find(".report_dialog").dialog({
+                  autoOpen: false,
+                  width: 400,
+                  title: I18n.t('titles.configure_report', 'Configure Report')
+                });
+              }
+              $dialog.dialog('open');
+            })
+
           }).catch(() => {
-            // We really should never get here... but if we do... do something.
-            const $message = $('<div />').text('Security Tab failed to load')
-            $('tab-security').append($message)
+            $('#tab-reports').text(I18n.t('There are no reports for you to view.'))
           })
+        } else if (ui.newTab.context.id === 'tab-security-link') {
+          // Set up axios and send a prefetch request to get the data we need,
+          // this should make things appear to be much quicker once the bundle
+          // loads in.
+          const cache = setupCache({
+            maxAge: 0.5 * 60 * 1000, // Hold onto the data for 30 seconds
+            debug: true
+          })
+
+          const api = axios.create({
+            adapter: cache.adapter
+          })
+
+          const splitContext = window.ENV.context_asset_string.split('_')
+
+          api
+            .get(`/api/v1/${splitContext[0]}s/${splitContext[1]}/csp_settings`)
+            .then(() => {
+              // Bring in the actual bundle of files to use
+              import('jsx/account_settings')
+                .then(({ start }) => {
+                  start(document.getElementById('tab-security'), {
+                    context: splitContext[0],
+                    contextId: splitContext[1],
+                    isSubAccount: !ENV.ACCOUNT.root_account,
+                    initialCspSettings: ENV.CSP,
+                    api
+                  })
+                })
+                .catch(() => {
+                  // We really should never get here... but if we do... do something.
+                  $('#tab-security').text(I18n.t('Security Tab failed to load'))
+                })
+            })
+            .catch(() => {
+              // We really should never get here... but if we do... do something.
+              $('#tab-security').text(I18n.t('Security Tab failed to load'))
+            })
         }
       }
-    }).show();
+    })
+    .show()
+
+
     $(".add_ip_filter_link").click(function(event) {
       event.preventDefault();
       var $filter = $(".ip_filter.blank:first").clone(true).removeClass('blank');
@@ -261,46 +343,7 @@ import './vendor/jquery.scrollTo'
     // Admins tab
     $(".add_users_link").click(addUsersLink);
 
-    $(".open_report_description_link").click(openReportDescriptionLink);
 
-    $(".run_report_link").click(function(event) {
-      event.preventDefault();
-      $(this).parent("form").submit();
-    });
-
-    $(".run_report_form").formSubmit({
-      resetForm: true,
-      beforeSubmit: function(data) {
-        $(this).loadingImage();
-        return true;
-      },
-      success: function(data) {
-        $(this).loadingImage('remove');
-        var report = $(this).attr('id').replace('_form', '');
-        $("#" + report).find('.run_report_link').hide()
-          .end().find('.configure_report_link').hide()
-          .end().find('.running_report_message').show();
-        $(this).parent(".report_dialog").dialog('close');
-      },
-      error: function(data) {
-        $(this).loadingImage('remove');
-        $(this).parent(".report_dialog").dialog('close');
-      }
-    });
-
-    $(".configure_report_link").click(function(event) {
-      event.preventDefault();
-      var data = $(this).data(),
-        $dialog = data.$report_dialog;
-      if (!$dialog) {
-        $dialog = data.$report_dialog = $(this).parent("td").find(".report_dialog").dialog({
-          autoOpen: false,
-          width: 400,
-          title: I18n.t('titles.configure_report', 'Configure Report')
-        });
-      }
-      $dialog.dialog('open');
-    })
 
     $('.service_help_dialog').each(function(index) {
       var $dialog = $(this),

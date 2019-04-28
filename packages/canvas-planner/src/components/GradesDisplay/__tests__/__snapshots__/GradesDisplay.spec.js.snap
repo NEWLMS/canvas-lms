@@ -2,10 +2,16 @@
 
 exports[`does not render caveat if no courses have grading periods 1`] = `
 <View
+  debug={false}
   display="auto"
+  overflowX="visible"
+  overflowY="visible"
 >
   <View
+    debug={false}
     display="auto"
+    overflowX="visible"
+    overflowY="visible"
     textAlign="center"
   >
     <Heading
@@ -27,11 +33,15 @@ exports[`does not render caveat if no courses have grading periods 1`] = `
   </View>
   <View
     as="div"
+    debug={false}
     display="auto"
     key="1"
     margin="0 0 large 0"
+    overflowX="visible"
+    overflowY="visible"
   >
     <div
+      className="GradesDisplay-styles__course"
       style={
         Object {
           "borderBottom": "solid thin",
@@ -41,6 +51,7 @@ exports[`does not render caveat if no courses have grading periods 1`] = `
     >
       <Link
         as="button"
+        disabled={false}
         href="/courses/1/grades"
         iconPlacement="start"
         linkRef={[Function]}
@@ -71,10 +82,16 @@ exports[`does not render caveat if no courses have grading periods 1`] = `
 
 exports[`renders a loading spinner when loading 1`] = `
 <View
+  debug={false}
   display="auto"
+  overflowX="visible"
+  overflowY="visible"
 >
   <View
+    debug={false}
     display="auto"
+    overflowX="visible"
+    overflowY="visible"
     textAlign="center"
   >
     <Heading
@@ -96,8 +113,11 @@ exports[`renders a loading spinner when loading 1`] = `
   </View>
   <View
     as="div"
+    debug={false}
     display="auto"
     margin="0 0 large 0"
+    overflowX="visible"
+    overflowY="visible"
     textAlign="center"
   >
     <Spinner
@@ -112,7 +132,10 @@ exports[`renders a loading spinner when loading 1`] = `
 
 exports[`renders an ErrorAlert if there is an error loading grades 1`] = `
 <View
+  debug={false}
   display="auto"
+  overflowX="visible"
+  overflowY="visible"
 >
   <ErrorAlert
     error="There was an error"
@@ -120,7 +143,10 @@ exports[`renders an ErrorAlert if there is an error loading grades 1`] = `
     Error loading grades
   </ErrorAlert>
   <View
+    debug={false}
     display="auto"
+    overflowX="visible"
+    overflowY="visible"
     textAlign="center"
   >
     <Heading
@@ -145,10 +171,16 @@ exports[`renders an ErrorAlert if there is an error loading grades 1`] = `
 
 exports[`renders some course grades 1`] = `
 <View
+  debug={false}
   display="auto"
+  overflowX="visible"
+  overflowY="visible"
 >
   <View
+    debug={false}
     display="auto"
+    overflowX="visible"
+    overflowY="visible"
     textAlign="center"
   >
     <Heading
@@ -170,11 +202,15 @@ exports[`renders some course grades 1`] = `
   </View>
   <View
     as="div"
+    debug={false}
     display="auto"
     key="1"
     margin="0 0 large 0"
+    overflowX="visible"
+    overflowY="visible"
   >
     <div
+      className="GradesDisplay-styles__course"
       style={
         Object {
           "borderBottom": "solid thin",
@@ -184,6 +220,7 @@ exports[`renders some course grades 1`] = `
     >
       <Link
         as="button"
+        disabled={false}
         href="/courses/1/grades"
         iconPlacement="start"
         linkRef={[Function]}
@@ -211,11 +248,15 @@ exports[`renders some course grades 1`] = `
   </View>
   <View
     as="div"
+    debug={false}
     display="auto"
     key="2"
     margin="0 0 large 0"
+    overflowX="visible"
+    overflowY="visible"
   >
     <div
+      className="GradesDisplay-styles__course"
       style={
         Object {
           "borderBottom": "solid thin",
@@ -225,6 +266,7 @@ exports[`renders some course grades 1`] = `
     >
       <Link
         as="button"
+        disabled={false}
         href="/courses/2/grades"
         iconPlacement="start"
         linkRef={[Function]}
@@ -252,11 +294,15 @@ exports[`renders some course grades 1`] = `
   </View>
   <View
     as="div"
+    debug={false}
     display="auto"
     key="3"
     margin="0 0 large 0"
+    overflowX="visible"
+    overflowY="visible"
   >
     <div
+      className="GradesDisplay-styles__course"
       style={
         Object {
           "borderBottom": "solid thin",
@@ -266,6 +312,7 @@ exports[`renders some course grades 1`] = `
     >
       <Link
         as="button"
+        disabled={false}
         href="/courses/3/grades"
         iconPlacement="start"
         linkRef={[Function]}
@@ -293,7 +340,10 @@ exports[`renders some course grades 1`] = `
   </View>
   <View
     as="div"
+    debug={false}
     display="auto"
+    overflowX="visible"
+    overflowY="visible"
     textAlign="center"
   >
     <Text

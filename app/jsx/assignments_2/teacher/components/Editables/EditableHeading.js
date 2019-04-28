@@ -31,15 +31,13 @@ export default class EditableHeading extends React.Component {
     value: string.isRequired, // the current text string
     onChange: func.isRequired, // when flips from edit to view, notify consumer of the new value
     onChangeMode: func.isRequired, // when mode changes
-    isValid: func, // is the current value valid
     initialMode: oneOf(['view', 'edit']), // what mode should we start in. after that mode is handled internally
     placeholder: string, // the string to display when the text value is empty
     viewAs: string, // <Heading as={viewAs}> when in view mode
     editButtonPlacement: oneOf(['start', 'end']), // is the edit button before or after the text?
     level: oneOf(['h1', 'h2', 'h3', 'h4', 'h5']),
     readOnly: bool,
-    required: bool,
-    invalidMessage: string
+    required: bool
   }
 
   static defaultProps = {
@@ -47,8 +45,7 @@ export default class EditableHeading extends React.Component {
     level: 'h2', // to match instui Heading default
     placeholder: '',
     readOnly: false,
-    required: false,
-    isValid: () => true
+    required: false
   }
 
   constructor(props) {
@@ -63,11 +60,11 @@ export default class EditableHeading extends React.Component {
     this._hiddenTextRef = null
   }
 
-  getSnapshotBeforeUpdate(prevProps, _prevState) {
-    if (prevProps.mode === 'view' && this._headingRef) {
-      const fontSize = this.getFontSize(this._headingRef)
-      // we'll set the width of the <input> to the width of the text + 1 char
-      return {width: this._headingRef.clientWidth + fontSize}
+  static getDerivedStateFromProps(props, _state) {
+    if (props.mode === 'view') {
+      return {
+        initialValue: props.value
+      }
     }
     return null
   }
@@ -178,6 +175,7 @@ export default class EditableHeading extends React.Component {
           value={this.props.value}
           onChange={this.handleInputChange}
           onKeyDown={this.handleKey}
+          onKeyUp={this.handleKey}
           aria-label={this.props.label}
           onBlur={onBlur}
           elementRef={createChainedFunction(this.getInputRef, editorRef)}
@@ -187,7 +185,7 @@ export default class EditableHeading extends React.Component {
   }
 
   renderEditButton = props => {
-    if (!this.props.readOnly && this.props.isValid(this.props.value)) {
+    if (!this.props.readOnly) {
       props.label = this.props.label
       return InPlaceEdit.renderDefaultEditButton(props)
     }
@@ -197,13 +195,13 @@ export default class EditableHeading extends React.Component {
   // don't have to check what mode is, because
   // this is the editor's key handler
   handleKey = event => {
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && event.type === 'keydown') {
       event.preventDefault()
       event.stopPropagation()
       if (!this.props.readOnly) {
         this.props.onChangeMode('view')
       }
-    } else if (event.key === 'Escape') {
+    } else if (event.key === 'Escape' && event.type === 'keyup') {
       // reset to initial value
       this.props.onChange(this.state.initialValue)
     }
@@ -213,26 +211,14 @@ export default class EditableHeading extends React.Component {
     this.props.onChange(event.target.value)
   }
 
-  // InPlaceEdit.onChange is fired when changing from edit to view
-  // mode. Reset the initialValue now.
   handleChange = newValue => {
-    this.setState(
-      {
-        initialValue: newValue
-      },
-      () => {
-        this.props.onChange(newValue)
-      }
-    )
+    this.props.onChange(newValue)
   }
 
   handleModeChange = mode => {
     if (!this.props.readOnly) {
-      if (mode === 'view') {
-        if (!this.props.isValid(this.props.value)) {
-          // can't leave edit mode with a bad value
-          return
-        }
+      if (this.props.mode === 'edit' && mode === 'view') {
+        this.props.onChange(this.props.value)
       }
       this.props.onChangeMode(mode)
     }

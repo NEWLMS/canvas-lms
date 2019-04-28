@@ -96,7 +96,6 @@ function loadGradebookData(opts) {
   const studentContentDataLoader = new StudentContentDataLoader({
     courseId: opts.courseId,
     gradebook: opts.gradebook,
-    getFinalGradeOverrides: opts.getFinalGradeOverrides,
     loadedStudentIds: opts.loadedStudentIds,
     onStudentsChunkLoaded: opts.studentsPageCb,
     onSubmissionsChunkLoaded: opts.submissionsChunkCb,
@@ -112,11 +111,12 @@ function loadGradebookData(opts) {
   const gotStudents = $.Deferred()
   const gotSubmissions = $.Deferred()
 
-  gotStudentIds.then(async data => {
-    await studentContentDataLoader.load(data.user_ids)
-    gotStudents.resolve()
-    gotSubmissions.resolve()
-  })
+  Promise.resolve(gotStudentIds)
+    .then(data => studentContentDataLoader.load(data.user_ids))
+    .then(() => {
+      gotStudents.resolve()
+      gotSubmissions.resolve()
+    })
 
   // Custom Column Data will load only after custom columns and all submissions.
   const gotCustomColumnData = getCustomColumnData(opts, gotCustomColumns, [gotSubmissions])

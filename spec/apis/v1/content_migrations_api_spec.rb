@@ -17,6 +17,7 @@
 #
 
 require File.expand_path(File.dirname(__FILE__) + '/../api_spec_helper')
+require File.expand_path(File.dirname(__FILE__) + '/../../sharding_spec_helper')
 
 describe ContentMigrationsController, type: :request do
   before :once do
@@ -366,6 +367,23 @@ describe ContentMigrationsController, type: :request do
       expect(migration.migration_settings[:source_course_id]).to eql @course.id
     end
 
+    context "sharding" do
+      specs_require_sharding
+
+      it "can queue a cross-shard course for course copy" do
+        @shard1.activate do
+          @other_account = Account.create
+          @copy_from = @other_account.courses.create!
+          @copy_from.enroll_user(@user, "TeacherEnrollment", :enrollment_state => "active")
+        end
+        json = api_call(:post, @migration_url + "?settings[source_course_id]=#{@copy_from.global_id}&migration_type=course_copy_importer",
+          @params.merge(:migration_type => 'course_copy_importer', :settings => {'source_course_id' => @copy_from.global_id.to_s}))
+
+        migration = ContentMigration.find json['id']
+        expect(migration.source_course).to eq @copy_from
+      end
+    end
+
     context "migration file upload" do
       it "should set attachment pre-flight data" do
         json = api_call(:post, @migration_url, @params, @post_params)
@@ -638,7 +656,7 @@ describe ContentMigrationsController, type: :request do
                       {"type"=>"syllabus_body", "property"=>"copy[all_syllabus_body]", "title"=>"Syllabus Body"},
                       {"type"=>"context_modules", "property"=>"copy[all_context_modules]", "title"=>"Modules", "count"=>1, "sub_items_url"=>"http://www.example.com/api/v1/courses/#{@orig_course.id}/content_migrations/#{@migration.id}/selective_data?type=context_modules"},
                       {"type"=>"discussion_topics", "property"=>"copy[all_discussion_topics]", "title"=>"Discussion Topics", "count"=>1, "sub_items_url"=>"http://www.example.com/api/v1/courses/#{@orig_course.id}/content_migrations/#{@migration.id}/selective_data?type=discussion_topics"},
-                      {"type"=>"wiki_pages", "property"=>"copy[all_wiki_pages]", "title"=>"Wiki Pages", "count"=>1, "sub_items_url"=>"http://www.example.com/api/v1/courses/#{@orig_course.id}/content_migrations/#{@migration.id}/selective_data?type=wiki_pages"},
+                      {"type"=>"wiki_pages", "property"=>"copy[all_wiki_pages]", "title"=>"Pages", "count"=>1, "sub_items_url"=>"http://www.example.com/api/v1/courses/#{@orig_course.id}/content_migrations/#{@migration.id}/selective_data?type=wiki_pages"},
                       {"type"=>"attachments", "property"=>"copy[all_attachments]", "title"=>"Files", "count"=>1, "sub_items_url"=>"http://www.example.com/api/v1/courses/#{@orig_course.id}/content_migrations/#{@migration.id}/selective_data?type=attachments"}]
     end
 

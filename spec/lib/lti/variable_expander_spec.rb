@@ -20,7 +20,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 require_dependency "lti/variable_expander"
 module Lti
   describe VariableExpander do
-    let(:root_account) { Account.new(lti_guid: 'test-lti-guid') }
+    let(:root_account) { Account.create!(lti_guid: 'test-lti-guid') }
     let(:account) { Account.new(root_account: root_account, name:'Test Account') }
     let(:course) { Course.new(account: account, course_code: 'CS 124', sis_source_id: '1234') }
     let(:group_category) { course.group_categories.new(name: 'Category') }
@@ -93,6 +93,20 @@ module Lti
         editor_contents: editor_contents,
         editor_selection: editor_selection
       )
+    end
+
+    it 'returns sis_id for enrollment' do
+      user.save!
+      course.save!
+      course.offer!
+      managed_pseudonym(user, account: root_account, username: 'login_id', sis_user_id: 'sis id!')
+      login = managed_pseudonym(user, account: root_account, username: 'login_id2', sis_user_id: 'sis id2!')
+      course.enroll_user(user, 'StudentEnrollment', sis_pseudonym_id: login.id, enrollment_state: 'active')
+
+      exp_hash = {test: '$Canvas.user.sisSourceId'}
+      variable_expander = VariableExpander.new(root_account, course, controller, current_user: user, tool: tool)
+      variable_expander.expand_variables!(exp_hash)
+      expect(exp_hash[:test]).to eq 'sis id2!'
     end
 
     it 'clears the lti_helper instance variable when you set the current_user' do
@@ -1259,7 +1273,7 @@ module Lti
           user.save
           user.email = 'someone@somewhere'
           cc1 = user.communication_channels.first
-          pseudonym1 = cc1.user.pseudonyms.build(:unique_id => cc1.path, :account => Account.default)
+          pseudonym1 = cc1.user.pseudonyms.build(:unique_id => cc1.path, :account => root_account)
           pseudonym1.sis_communication_channel_id=cc1.id
           pseudonym1.communication_channel_id=cc1.id
           pseudonym1.sis_user_id="some_sis_id"
@@ -1300,6 +1314,22 @@ module Lti
         end
 
         it 'has substitution for $vnd.instructure.User.uuid' do
+          allow(user).to receive(:uuid).and_return('N2ST123dQ9zyhurykTkBfXFa3Vn1RVyaw9Os6vu3')
+          exp_hash = {test: '$vnd.instructure.User.uuid'}
+          variable_expander.expand_variables!(exp_hash)
+          expect(exp_hash[:test]).to eq 'N2ST123dQ9zyhurykTkBfXFa3Vn1RVyaw9Os6vu3'
+        end
+
+        it 'has substitution for $vnd.instructure.User.uuid and uses Past uuid' do
+          allow(user).to receive(:uuid).and_return('N2ST123dQ9zyhurykTkBfXFa3Vn1RVyaw9Os6vu3')
+          UserPastLtiId.create!(user: user, context: account, user_lti_id: 'old_lti_id', user_lti_context_id: 'old_lti_id', user_uuid: 'old_uuid')
+
+          exp_hash = {test: '$vnd.instructure.User.uuid'}
+          variable_expander.expand_variables!(exp_hash)
+          expect(exp_hash[:test]).to eq 'old_uuid'
+        end
+
+        it 'has substitution for $vnd.instructure.User.current_uuid' do
           allow(user).to receive(:uuid).and_return('N2ST123dQ9zyhurykTkBfXFa3Vn1RVyaw9Os6vu3')
           exp_hash = {test: '$vnd.instructure.User.uuid'}
           variable_expander.expand_variables!(exp_hash)

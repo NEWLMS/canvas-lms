@@ -53,6 +53,8 @@ export default class Toolbox extends React.Component {
   static propTypes = {
     assignment: TeacherAssignmentShape.isRequired,
     onChangeAssignment: func.isRequired,
+    onValidate: func.isRequired,
+    invalidMessage: func.isRequired,
     onSetWorkstate: func.isRequired,
     onUnsubmittedClick: func,
     onDelete: func,
@@ -62,7 +64,7 @@ export default class Toolbox extends React.Component {
   static defaultProps = {
     onUnsubmittedClick: () => {},
     onDelete: () => {},
-    readOnly: true
+    readOnly: false
   }
 
   state = {
@@ -164,6 +166,8 @@ export default class Toolbox extends React.Component {
         pointsPossible={this.props.assignment.pointsPossible}
         onChange={this.handlePointsChange}
         onChangeMode={this.handlePointsChangeMode}
+        onValidate={this.props.onValidate}
+        invalidMessage={this.props.invalidMessage}
         readOnly={this.props.readOnly}
       />
     )

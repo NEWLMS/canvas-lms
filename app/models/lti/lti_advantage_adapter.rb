@@ -30,6 +30,7 @@ module Lti
       @return_url = return_url
       @expander = expander
       @opts = opts
+      @target_link_uri = opts[:launch_url]
     end
 
     def generate_post_payload_for_assignment(*args)
@@ -45,12 +46,13 @@ module Lti
     end
 
     def launch_url
-      @tool.login_or_launch_uri(extension_type: resource_type)
+      @tool.login_or_launch_url(extension_type: resource_type)
     end
 
     private
 
     def target_link_uri
+      return @target_link_uri if @target_link_uri.present?
       resource_type ? @tool.extension_setting(resource_type, :target_link_uri) : @tool.url
     end
 

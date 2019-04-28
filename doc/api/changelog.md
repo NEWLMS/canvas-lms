@@ -11,8 +11,47 @@ The API Change Log includes adjustments to the Canvas API documentation as part 
 
 <div class="changelog"></div>
 
-## 2019-03-09
+## 2019-05-11
+### Additions
+| API Calls | Function |  |
+|----------------------|----------------------|--------------------------|
+| [Assignments API] | Create an Assignment Endpoint<br><br>Edit an Assignment Endpoint | Added assignment [grader_count], assignment [final_grader_id], assignment [grader_comments_visible_to_graders], assignment [graders_anonymous_to_graders], assignment [graders_names_visible_to_final_grader], assignment [anonymous_grading] parameters
+|  [SIS Imports API]         | Import SIS Data Endpoint | Added diff_row_count_threshold parameter
+|  [Users API]         | Merge User Into Another User Endpoint | Added user merge details and caveats for behaviors relating to avatars, terms of use, communication channels, enrollments, submissions, access tokens, conversations, favorites, and LTI tools
 
+[Assignments API]: assignments.html
+[SIS Imports API]: sis_imports.html
+[Users API]: users.html
+
+## 2019-04-20
+### Additions
+| API Calls | Function |  |
+|----------------------|----------------------|--------------------------|
+| [Submissions API] | Grade or Comment on a Submission Endpoint | Rubric_assessment parameter: Added rubric_assessment[criterion_id][rating_id] sub-parameter<br><br>Added rating IDs to example rubric in description
+|  [Users API]         | Update User Settings Endpoint | Hide_dashcard_color_overlays: Added parameter
+
+[Submissions API]: submissions.html
+[Users API]: users.html
+
+
+## 2019-03-30
+### Changes
+| API Calls | Function |  |
+|----------------------|----------------------|--------------------------|
+| [Content Migrations API] | Update a Content Migration Endpoint | Clarified the endpoint takes same arguments as creating a migration<br><br>Clarified that updating the content migration will also be used when importing content selectively |
+
+[Content Migrations API]: content_migrations.html
+
+### Additions
+| API Calls | Function |  |
+|----------------------|----------------------|--------------------------|
+| [Content Migrations API] | Create a Content Migration Endpoint | Added selective_import parameter
+|                          | List Items for Selective Import Endpoint | Added endpoint
+
+[Content Migrations API]: content_migrations.html
+
+
+## 2019-03-09
 ### Changes
 | API Calls | Function |  |
 |----------------------|----------------------|--------------------------|
@@ -26,94 +65,3 @@ The API Change Log includes adjustments to the Canvas API documentation as part 
 | [Users API] | To Do Items Endpoint | Removed mention of user dashboard, as this API call is not used for the dashboard
 
 [Users API]: users.html
-
-
-## 2019-02-16
-
-### Additions
-| API Responses | Function |      |
-|----------------------|----------------------|--------------------------|
-| [Users API] | Edit a User Endpoint | Added [user]title and [user]bio parameters
-
-[Users API]: users.html
-
-
-## 2019-01-26
-
-### Changes
-| API Calls | Function |      |
-|----------------------|----------------------|--------------------------|
-| [Submissions API]  |  List Gradeable Students Endpoint | Added clarification about anonymous grading |
-
-[Submissions API]: submissions.html
-
-### Additions
-| API Responses | Function |      |
-|----------------------|----------------------|--------------------------|
-| [Assignments API] | Assignment Object | Returns grader_count, final_grader, grader_comments_visible_to_graders, graders_anonymous_to_graders, grader_names_visible_to_final_grader, and anonymous_grading parameters |
-| [Submissions API] | Submission Object | Returns UserDisplay parameter |
-| [Users API] |      | Added AnonyousUserDisplay Object |
-
-[Assignments API]: assignments.html
-[Submissions API]: submissions.html
-[Users API]: users.html
-
-### Removals
-| API Responses | Function |      |
-|----------------------|----------------------|--------------------------|
-| [Enrollments API] | Enrollment Object | Removed computed_current_score, computed_final_score, computed_current_grade, computed_final_grade, current_period_computed_current_score, current_period_computed_final_score, current_period_computed_current_grade, and current_period_computed_final_grade parameters |
-
-[Enrollments API]: enrollments.html
-
-## 2019-01-05
-
-### Changes
-| API Calls            | Function             |                          |
-|----------------------|----------------------|--------------------------|
-| [Developer Keys API] |                      | Verified and corrected all links in document               |
-| [Files API]          | Delete File Endpoint | Clarified endpoint usage and added permanent deletion warning |
-
-  [Developer Keys API]: file.developer_keys.html
-  [Files API]: files.html
-
-### Additions
-| API Calls  | Function  |           |
-|------------|-----------|-----------|
-| [Assignments API]   | Create an Assignment Endpoint<br><br>Edit an Assignment Endpoint  | Added assignment\[allowed\_attempts\] parameter |
-| [Conversations API] | Create a Conversations Endpoint | Added force\_new parameter |
-| [Courses API]       | Get a Single Course Endpoint    | Added teacher\_limit parameter                                               |
-| [Roles API]         | Create a New Role Endpoint      | Permissions\_enabled parameter: Added view\_audit\_trail in permissions list |
-
-  [Assignments API]: assignments.html
-  [Conversations API]: conversations.html
-  [Courses API]: courses.html
-  [Roles API]: roles.html
-
-<p></p>
-| API Responses     | Function   |   |
-|-------------------|------------|---|
-| [Assignments API] | Assignment Object  | Added allowed\_attempts parameter |
-| [Enrollments API] | Enrollment Object  | Added override\_grade, override\_score, current\_period\_override\_grade, and current\_period\_override\_score parameters<br><br>Added override score clarifications in computed\_current\_score, computed\_final\_score, computed\_final\_grade, current\_period\_computed\_current\_score, current\_period\_computed\_final\_score, current\_period\_computed\_current\_grade, and current\_period\_computed\_final\_grade parameters |
-| [SIS Imports API] | SIS Import Statistic Object <br><br>SIS Import Statistic Objects | Added object examples |
-| [SIS Imports API] | SIS Import Object  | Workflow\_state parameter: Added initializing and failed descriptions <br><br>Added statistics parameter                           |
-| [Submissions API] | Submission Object  | Added extra\_attempts parameter  |
-
-  [Assignments API]: assignments.html
-  [Enrollments API]: enrollments.html
-  [SIS Imports API]: sis_imports.html
-  [Submissions API]: submissions.html
-
-
-### Removals
-| API Calls     | Function  |   |
-|---------------|-----------|---|
-| [Courses API] | List Users in Course Endpoint | Include parameter: Removed email as an optional parameter |
-
-  [Courses API]: courses.html
-
-<p></p>
-| Content       | Function |   |
-|---------------|----------|---|
-| [Navigation Tools] |     | Removed incorrect auto-generated links from page |
-
-  [Navigation Tools]: file.navigation_tools.html

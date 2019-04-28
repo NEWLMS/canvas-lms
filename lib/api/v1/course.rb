@@ -27,6 +27,7 @@ module Api::V1::Course
 
   def course_settings_json(course)
     settings = {}
+    settings[:allow_final_grade_override] = course.allow_final_grade_override?
     settings[:allow_student_discussion_topics] = course.allow_student_discussion_topics?
     settings[:allow_student_forum_attachments] = course.allow_student_forum_attachments?
     settings[:allow_student_discussion_editing] = course.allow_student_discussion_editing?
@@ -173,7 +174,8 @@ module Api::V1::Course
   def preload_teachers(courses)
     threshold = params[:teacher_limit].presence&.to_i
     if threshold
-      teacher_counts = Course.where(:id => courses).joins(:teacher_enrollments).group("courses.id").count
+      scope = TeacherEnrollment.active_or_pending.where(:course_id => courses).distinct.select(:user_id, :course_id)
+      teacher_counts = Enrollment.from("(#{scope.to_sql}) AS t").group("t.course_id").count
       to_preload = []
       courses.each do |course|
         next unless count = teacher_counts[course.id]

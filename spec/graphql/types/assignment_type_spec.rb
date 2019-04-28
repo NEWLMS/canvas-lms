@@ -17,7 +17,7 @@
 #
 
 require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
-require File.expand_path(File.dirname(__FILE__) + "/../../helpers/graphql_type_tester")
+require_relative "../graphql_spec_helper"
 
 describe Types::AssignmentType do
   let_once(:course) { course_factory(active_all: true) }
@@ -142,6 +142,17 @@ describe Types::AssignmentType do
       expect(assignment_type.resolve("description", request: ActionDispatch::TestRequest.create)).to be_nil
     end
 
+    it "works for assignments in public courses" do
+      course.update! is_public: true
+      expect(
+        assignment_type.resolve(
+          "description",
+          request: ActionDispatch::TestRequest.create,
+          current_user: nil
+        )
+      ).to include "Content"
+    end
+
     it "uses api_user_content for the description" do
       expect(
         assignment_type.resolve("description", request: ActionDispatch::TestRequest.create)
@@ -167,6 +178,40 @@ describe Types::AssignmentType do
 
   describe "submissionsConnection" do
     let_once(:other_student) { student_in_course(course: course, active_all: true).user }
+
+    # This is kind of a catch-all test the assignment.submissionsConnection
+    # graphql plumbing. The submission search specs handle testing the
+    # implementation. This makes sure the graphql inputs are hooked up right.
+    # Other tests below were already here to test specific cases, and I think
+    # they still have value as a sanity check.
+    it "plumbs through filter options to SubmissionSearch" do
+      allow(SubmissionSearch).to receive(:new).and_call_original
+      assignment_type.resolve(<<~GQL, current_user: teacher)
+        submissionsConnection(
+          filter: {
+            states: submitted,
+            sectionIds: 42,
+            enrollmentTypes: StudentEnrollment,
+            userSearch: foo,
+            scoredLessThan: 3
+            scoredMoreThan: 1
+          }
+          orderBy: {field: username, direction: descending}
+        ) { nodes { _id } }
+      GQL
+      expect(SubmissionSearch).to have_received(:new).with(assignment, teacher, nil, {
+        states: ["submitted"],
+        section_ids: ["42"],
+        enrollment_types: ["StudentEnrollment"],
+        user_search: 'foo',
+        scored_less_than: 3.0,
+        scored_more_than: 1.0,
+        order_by: [{
+          field: "username",
+          direction: "descending"
+        }]
+      })
+    end
 
     it "returns 'real' submissions from with permissions" do
       submission1 = assignment.submit_homework(student, {:body => "sub1", :submission_type => "online_text_entry"})
@@ -272,6 +317,38 @@ describe Types::AssignmentType do
 
     assignment.update_attribute :grading_type, "fakefakefake"
     expect(assignment_type.resolve("gradingType")).to be_nil
+  end
+
+  context "overridden assignments" do
+    before(:once) do
+      @assignment_due_at = 1.month.from_now
+
+      @overridden_due_at = 2.weeks.from_now
+      @overridden_unlock_at = 1.week.from_now
+      @overridden_lock_at = 3.weeks.from_now
+
+      @overridden_assignment = course.assignments.create!(title: "asdf",
+                                                          workflow_state: "published",
+                                                          due_at: @assignment_due_at)
+
+      override = assignment_override_model(assignment: @overridden_assignment,
+                                           due_at: @overridden_due_at,
+                                           unlock_at: @overridden_unlock_at,
+                                           lock_at: @overridden_lock_at)
+
+      override.assignment_override_students.build(user: student)
+      override.save!
+    end
+
+    let(:overridden_assignment_type) { GraphQLTypeTester.new(@overridden_assignment) }
+
+    it "returns overridden assignment dates" do
+      expect(overridden_assignment_type.resolve("dueAt", current_user: teacher)).to eq @assignment_due_at.iso8601
+      expect(overridden_assignment_type.resolve("dueAt", current_user: student)).to eq @overridden_due_at.iso8601
+
+      expect(overridden_assignment_type.resolve("lockAt", current_user: student)).to eq @overridden_lock_at.iso8601
+      expect(overridden_assignment_type.resolve("unlockAt", current_user: student)).to eq @overridden_unlock_at.iso8601
+    end
   end
 
   describe Types::AssignmentOverrideType do

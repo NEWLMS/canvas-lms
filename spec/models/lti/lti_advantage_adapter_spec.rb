@@ -26,7 +26,7 @@ describe Lti::LtiAdvantageAdapter do
   let(:return_url) { 'http://www.platform.com/return_url' }
   let(:user) { @student }
   let(:opts) { { resource_type: 'course_navigation', domain: 'test.com' } }
-  let(:controller_double) { double(polymorphic_url: '') }
+  let(:controller_double) { double(polymorphic_url: 'test.com') }
   let(:expander_opts) { { current_user: user, tool: tool, controller: controller_double } }
   let(:expander) do
     Lti::VariableExpander.new(
@@ -116,18 +116,15 @@ describe Lti::LtiAdvantageAdapter do
     it 'sets the domain in the message hint' do
       expect(Canvas::Security.decode_jwt(login_message['lti_message_hint'])['canvas_domain']).to eq 'test.com'
     end
-  end
 
-  describe '#generate_post_payload_for_assignment' do
-    let(:outcome_service_url) { 'https://www.outcome_service_url.com' }
-    let(:legacy_outcome_service_url) { 'https://www.legacy_url.com' }
-    let(:lti_turnitin_outcomes_placement_url) { 'https://www.turnitin.com' }
-    let(:params) { JSON.parse(fetch_and_delete_launch(course, verifier)) }
-    let(:verifier) do
-      jws = adapter.generate_post_payload_for_homework_submission(assignment)['lti_message_hint']
-      Canvas::Security.decode_jwt(jws)['verifier']
+    context 'when a "launch_url" is set in the options hash' do
+      let(:launch_url) { 'https://www.cool-took.com/launch?with_query_params=true' }
+      let(:opts) { {launch_url: launch_url} }
+
+      it('uses the launch_url as the target_link_uri') do
+        expect(login_message['target_link_uri']).to eq launch_url
+      end
     end
-    let(:expander_opts) { super().merge(assignment: assignment) }
   end
 
   describe '#launch_url' do
@@ -145,13 +142,13 @@ describe Lti::LtiAdvantageAdapter do
       expect(adapter.launch_url).to eq 'http://www.example.com/basic_lti'
     end
 
-    context 'when the oidc_login_uri is set' do
-      let(:oidc_login_uri) { 'https://www.test.com/oidc/login' }
+    context 'when the oidc_initiation_url is set' do
+      let(:oidc_initiation_url) { 'https://www.test.com/oidc/login' }
 
-      before { tool.developer_key.update!(oidc_login_uri: oidc_login_uri) }
+      before { tool.developer_key.update!(oidc_initiation_url: oidc_initiation_url) }
 
       it 'uses the oidc login uri' do
-        expect(adapter.launch_url).to eq oidc_login_uri
+        expect(adapter.launch_url).to eq oidc_initiation_url
       end
     end
   end

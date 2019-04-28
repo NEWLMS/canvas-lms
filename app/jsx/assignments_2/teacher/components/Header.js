@@ -59,6 +59,8 @@ export default class Header extends React.Component {
   static propTypes = {
     assignment: TeacherAssignmentShape.isRequired,
     onChangeAssignment: func.isRequired,
+    onValidate: func.isRequired,
+    invalidMessage: func.isRequired,
     onSetWorkstate: func.isRequired,
     onUnsubmittedClick: func,
     onPublishChange: func,
@@ -70,7 +72,7 @@ export default class Header extends React.Component {
     onUnsubmittedClick: () => {},
     onPublishChange: () => {},
     onDelete: () => {},
-    readOnly: true
+    readOnly: false
   }
 
   constructor(props) {
@@ -82,7 +84,6 @@ export default class Header extends React.Component {
       assignmentTypeMode: initialMode,
       selectedAssignmentType: isNewAssignment ? null : 'assignment',
 
-      moduleList: props.assignment.course.modulesConnection.nodes,
       modulesMode: initialMode,
 
       assignmentGroupMode: initialMode,
@@ -142,18 +143,7 @@ export default class Header extends React.Component {
   }
 
   handleModulesChangeMode = mode => {
-    this.setState((prevState, props) => {
-      let moduleList = prevState.moduleList
-      if (mode === 'edit') {
-        // TODO: probably shouldn't come from here
-        // or if it does, exhaust all the pages
-        moduleList = props.assignment.course.modulesConnection.nodes
-      }
-      return {
-        modulesMode: mode,
-        moduleList
-      }
-    })
+    this.setState({modulesMode: mode})
   }
 
   // TODO: support +Module
@@ -200,8 +190,7 @@ export default class Header extends React.Component {
             <View display="block" padding="xx-small 0 0 xx-small">
               <AssignmentModules
                 mode={this.state.modulesMode}
-                assignment={assignment}
-                moduleList={this.state.moduleList}
+                courseId={assignment.course.lid}
                 selectedModules={assignment.modules}
                 onChange={this.handleModulesChange}
                 onChangeMode={this.handleModulesChangeMode}
@@ -226,6 +215,8 @@ export default class Header extends React.Component {
                 name={assignment.name}
                 onChange={this.handleNameChange}
                 onChangeMode={this.handleNameChangeMode}
+                onValidate={this.props.onValidate}
+                invalidMessage={this.props.invalidMessage}
                 readOnly={this.props.readOnly}
               />
             </View>

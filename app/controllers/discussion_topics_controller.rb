@@ -243,7 +243,7 @@ require 'atom'
 #
 class DiscussionTopicsController < ApplicationController
   before_action :require_context_and_read_access, :except => :public_feed
-  before_action :rich_content_service_config
+  before_action :rce_js_env
 
   include Api::V1::DiscussionTopics
   include Api::V1::Assignment
@@ -379,6 +379,21 @@ class DiscussionTopicsController < ApplicationController
           js_env openTopics: open_topics, lockedTopics: locked_topics, newTopicURL: named_context_url(@context, :new_context_discussion_topic_url)
         end
 
+        fetch_params = {
+          per_page: 50,
+          plain_messages: true,
+          include_assignment: true,
+          exclude_assignment_descriptions: true,
+          exclude_context_module_locked_topics: true,
+          page: "__page__"
+        }
+        fetch_params[:include] = ['sections_user_count', 'sections'] if @context.is_a?(Course)
+
+        discussion_topics_fetch_url = send("api_v1_#{@context.class.to_s.downcase}_discussion_topics_path", fetch_params)
+        @discussion_topics_urls_to_prefetch = (scope.count / fetch_params[:per_page].to_f).ceil.times.map do |i|
+          discussion_topics_fetch_url.gsub(fetch_params[:page], (i+1).to_s)
+        end
+
         hash = {
           USER_SETTINGS_URL: api_v1_user_settings_url(@current_user),
           totalDiscussions: scope.count,
@@ -391,7 +406,7 @@ class DiscussionTopicsController < ApplicationController
           },
           discussion_topic_menu_tools: external_tools_display_hashes(:discussion_topic_menu),
         }
-        if @context.is_a?(Course) && @context.grants_right?(@current_user, session, :read) && !@js_env[:COURSE_ID].present?
+        if @context.is_a?(Course) && @context.grants_right?(@current_user, session, :read) && @js_env&.dig(:COURSE_ID).blank?
           hash[:COURSE_ID] = @context.id.to_s
         end
         conditional_release_js_env(includes: :active_rules)
@@ -430,7 +445,6 @@ class DiscussionTopicsController < ApplicationController
   end
 
   def announcements_locked?
-    return true if @context.account.lock_all_announcements[:locked]
     return false unless @context.is_a?(Course)
     @context.lock_all_announcements?
   end
@@ -827,7 +841,7 @@ class DiscussionTopicsController < ApplicationController
   #
   # @argument specific_sections [String]
   #   A comma-separated list of sections ids to which the discussion topic
-  #   should be made specific too.  If it is not desired to make the discussion
+  #   should be made specific to.  If it is not desired to make the discussion
   #   topic specific to sections, then this parameter may be omitted or set to
   #   "all".  Can only be present only on announcements and only those that are
   #   for a course (as opposed to a group).
@@ -1003,10 +1017,6 @@ class DiscussionTopicsController < ApplicationController
   end
 
   protected
-
-  def rich_content_service_config
-    rce_js_env(:highrisk)
-  end
 
   def cancel_redirect_url
     topic_type = @topic.is_announcement ? :announcements : :discussion_topics

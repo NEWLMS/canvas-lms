@@ -18,7 +18,7 @@
 
 import I18n from 'i18n!react_developer_keys'
 import $ from 'jquery'
-import Button from '@instructure/ui-buttons/lib/components/Button'
+
 import CloseButton from '@instructure/ui-buttons/lib/components/CloseButton'
 import Heading from '@instructure/ui-elements/lib/components/Heading'
 import Modal, {ModalHeader, ModalBody} from '@instructure/ui-overlays/lib/components/Modal'
@@ -26,11 +26,15 @@ import Spinner from '@instructure/ui-elements/lib/components/Spinner'
 import View from '@instructure/ui-layout/lib/components/View'
 import React from 'react'
 import PropTypes from 'prop-types'
-import DeveloperKeyFormFields from './NewKeyForm'
+import NewKeyForm from './NewKeyForm'
 import NewKeyFooter from './NewKeyFooter'
 import LtiKeyFooter from './LtiKeyFooter'
 
 export default class DeveloperKeyModal extends React.Component {
+  state = {
+    toolConfiguration: {}
+  }
+
   developerKeyUrl() {
     if (this.developerKey()) {
       return `/api/v1/developer_keys/${this.developerKey().id}`
@@ -103,14 +107,26 @@ export default class DeveloperKeyModal extends React.Component {
 
   saveLtiToolConfiguration = () => {
     const formData = new FormData(this.submissionForm)
-    let settings
-    try {
-      settings = JSON.parse(formData.get("tool_configuration"))
-    } catch(e) {
-      if (e instanceof SyntaxError) {
-        $.flashError(I18n.t('Json is not valid. Please submit properly formatted json.'))
+    if (formData.get("developer_key[redirect_uris]").trim().length === 0) {
+      $.flashError(I18n.t('A redirect_uri is required, please supply one.'))
+      return
+    }
+    let settings = {};
+    if (this.props.createLtiKeyState.configurationMethod === 'json') {
+      try {
+        settings = JSON.parse(formData.get("tool_configuration"))
+      } catch(e) {
+        if (e instanceof SyntaxError) {
+          $.flashError(I18n.t('Json is not valid. Please submit properly formatted json.'))
+          return
+        }
+      }
+    } else if(this.props.createLtiKeyState.configurationMethod === 'manual') {
+      if (!this.newForm.valid()) {
         return
       }
+      settings = this.newForm.generateToolConfiguration();
+      this.setState({toolConfiguration: settings})
     }
 
     this.props.store.dispatch(this.props.actions.saveLtiToolConfiguration({
@@ -187,7 +203,7 @@ export default class DeveloperKeyModal extends React.Component {
       actions
     } = this.props;
 
-    return <DeveloperKeyFormFields
+    return <NewKeyForm
       ref={this.setNewFormRef}
       developerKey={developerKey}
       availableScopes={availableScopes}
@@ -198,10 +214,13 @@ export default class DeveloperKeyModal extends React.Component {
       setDisabledPlacements={actions.ltiKeysSetDisabledPlacements}
       setPrivacyLevel={actions.ltiKeysSetPrivacyLevel}
       createLtiKeyState={createLtiKeyState}
+      setLtiConfigurationMethod={actions.setLtiConfigurationMethod}
+      toolConfiguration={this.state.toolConfiguration || this.props.toolConfiguration}
     />
   }
 
   setNewFormRef = node => { this.newForm = node }
+
   modalContainerRef = node => { this.modalContainer = node }
 
   modalIsOpen() {
@@ -255,21 +274,23 @@ DeveloperKeyModal.propTypes = {
     editDeveloperKey: PropTypes.func.isRequired,
     listDeveloperKeyScopesSet: PropTypes.func.isRequired,
     saveLtiToolConfiguration: PropTypes.func.isRequired,
-    resetLtiState: PropTypes.func.isRequired
+    resetLtiState: PropTypes.func.isRequired,
+    setLtiConfigurationMethod: PropTypes.func.isRequired
   }).isRequired,
   createLtiKeyState: PropTypes.shape({
     isLtiKey: PropTypes.bool.isRequired,
     customizing: PropTypes.bool.isRequired,
     toolConfiguration: PropTypes.object.isRequired,
     toolConfigurationUrl: PropTypes.string.isRequired,
-    saveToolConfigurationPending: PropTypes.bool.isRequired
+    saveToolConfigurationPending: PropTypes.bool.isRequired,
+    configurationMethod: PropTypes.string.isRequired
   }).isRequired,
   createOrEditDeveloperKeyState: PropTypes.shape({
     developerKeyCreateOrEditSuccessful: PropTypes.bool.isRequired,
     developerKeyCreateOrEditFailed: PropTypes.bool.isRequired,
     developerKeyCreateOrEditPending: PropTypes.bool.isRequired,
     developerKeyModalOpen: PropTypes.bool.isRequired,
-    developerKey: DeveloperKeyFormFields.propTypes.developerKey
+    developerKey: NewKeyForm.propTypes.developerKey
   }).isRequired,
   availableScopesPending: PropTypes.bool.isRequired,
   ctx: PropTypes.shape({
@@ -277,5 +298,8 @@ DeveloperKeyModal.propTypes = {
       contextId: PropTypes.string.isRequired
     })
   }).isRequired,
-  selectedScopes: PropTypes.arrayOf(PropTypes.string).isRequired
+  selectedScopes: PropTypes.arrayOf(PropTypes.string).isRequired,
+  toolConfiguration: PropTypes.shape({
+    oidc_initiation_url: PropTypes.string
+  })
 }

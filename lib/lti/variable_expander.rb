@@ -59,7 +59,7 @@ module Lti
                                  @context.enrollment_term.start_at }
     TERM_NAME_GUARD = -> { @context.is_a?(Course) && @context.enrollment_term&.name }
     USER_GUARD = -> { @current_user }
-    SIS_USER_GUARD = -> { @current_user && @current_user.pseudonym && @current_user.pseudonym.sis_user_id }
+    SIS_USER_GUARD = -> { sis_pseudonym&.sis_user_id }
     PSEUDONYM_GUARD = -> { sis_pseudonym }
     ENROLLMENT_GUARD = -> { @current_user && @context.is_a?(Course) }
     ROLES_GUARD = -> { @current_user && (@context.is_a?(Course) || @context.is_a?(Account)) }
@@ -87,7 +87,7 @@ module Lti
     end
 
     def lti_helper
-      @lti_helper ||= Lti::SubstitutionsHelper.new(@context, @root_account, @current_user, @tool, @resource_type)
+      @lti_helper ||= Lti::SubstitutionsHelper.new(@context, @root_account, @current_user, @tool)
     end
 
     def current_user=(current_user)
@@ -742,13 +742,23 @@ module Lti
                        -> { @current_user.id },
                        USER_GUARD
 
-    # Returns the Canvas user_uuid of the launching user.
+    # Returns the Canvas user_uuid of the launching user for the context.
     # @duplicates User.uuid
     # @example
     #   ```
     #   N2ST123dQ9zyhurykTkBfXFa3Vn1RVyaw9Os6vu3
     #   ```
     register_expansion 'vnd.instructure.User.uuid', [],
+                       -> { UserPastLtiId.uuid_for_user_in_context(@current_user, @context) },
+                       USER_GUARD
+
+    # Returns the current Canvas user_uuid of the launching user.
+    # @duplicates User.uuid
+    # @example
+    #   ```
+    #   N2ST123dQ9zyhurykTkBfXFa3Vn1RVyaw9Os6vu3
+    #   ```
+    register_expansion 'vnd.instructure.User.current_uuid', [],
                        -> { @current_user.uuid },
                        USER_GUARD
 
@@ -928,7 +938,7 @@ module Lti
     #   da12345678cb37ba1e522fc7c5ef086b7704eff9
     #   ```
     register_expansion 'Canvas.masqueradingUser.userId', [],
-                       -> { @tool.opaque_identifier_for(@controller.logged_in_user) },
+                       -> { @tool.opaque_identifier_for(@controller.logged_in_user, context: @context) },
                        MASQUERADING_GUARD
 
     # Returns the xapi url for the user.
@@ -1239,6 +1249,14 @@ module Lti
     private
 
     def sis_pseudonym
+      if @context.is_a?(Course) && !instance_variable_defined?(:@sis_pseudonym)
+        enrollments = @current_user&.enrollments&.current&.where(course_id: @context)&.where&.not(sis_pseudonym_id: nil)&.preload(:sis_pseudonym)
+        if enrollments&.exists?
+          # in the off chance there is a user that has two sis_ids for the same
+          # course, we will order them to at least be consistent, use the first
+          @sis_pseudonym = enrollments.first.sis_pseudonym
+        end
+      end
       @sis_pseudonym ||= SisPseudonym.for(@current_user, @root_account, type: :trusted, require_sis: false) if @current_user
     end
 

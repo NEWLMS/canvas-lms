@@ -21,6 +21,7 @@ class Mutations::PostAssignmentGradesForSections < Mutations::BaseMutation
 
   argument :assignment_id, ID, required: true, prepare: GraphQLHelpers.relay_or_legacy_id_prepare_func("Assignment")
   argument :section_ids, [ID], required: true, prepare: GraphQLHelpers.relay_or_legacy_ids_prepare_func("Section")
+  argument :graded_only, Boolean, required: false
 
   field :assignment, Types::AssignmentType, null: true
   field :progress, Types::ProgressType, null: true
@@ -35,24 +36,37 @@ class Mutations::PostAssignmentGradesForSections < Mutations::BaseMutation
       raise GraphQL::ExecutionError, "not found"
     end
 
-    return nil unless authorized_action?(assignment, :grade)
+    verify_authorized_action!(assignment, :grade)
     raise GraphQL::ExecutionError, "Post Policies feature not enabled" unless course.feature_enabled?(:post_policies)
 
     unless assignment.grades_published?
       raise GraphQL::ExecutionError, "Assignments under moderation cannot be posted by section before grades are published"
     end
-    raise GraphQL::ExecutionError, "Anonymous assignments cannot be posted by section" if assignment.anonymous_grading?
+    raise GraphQL::ExecutionError, "Anonymous assignments cannot be posted by section" if assignment.anonymize_students?
 
     if sections.empty? || sections.count != input[:section_ids].size
       raise GraphQL::ExecutionError, "Invalid section ids"
     end
 
     student_ids = course.student_enrollments.where(course_section: sections).pluck(:user_id)
-    submission_ids = assignment.submissions.active.where(user_id: student_ids).pluck(:id)
+
+    submissions_scope = if input[:graded_only]
+      assignment.submissions.where(user_id: student_ids).graded
+    else
+      assignment.submissions.where(user_id: student_ids)
+    end
+
+    submission_ids = submissions_scope.pluck(:id)
     progress = course.progresses.new(tag: "post_assignment_grades_for_sections")
 
     if progress.save
-      progress.process_job(assignment, :post_submissions, {preserve_method_args: true}, submission_ids: submission_ids)
+      progress.process_job(
+        assignment,
+        :post_submissions,
+        {preserve_method_args: true},
+        progress: progress,
+        submission_ids: submission_ids
+      )
       return {assignment: assignment, progress: progress, sections: sections}
     else
       raise GraphQL::ExecutionError, "Error posting assignment grades for sections"

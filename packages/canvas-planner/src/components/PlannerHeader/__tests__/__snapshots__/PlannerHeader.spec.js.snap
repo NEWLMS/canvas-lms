@@ -2,7 +2,7 @@
 
 exports[`new activity button does not show when there is no new activity 1`] = `
 <div
-  className="undefined PlannerHeader"
+  className="PlannerHeader-styles__root PlannerHeader"
 >
   <Button
     as="button"
@@ -79,6 +79,7 @@ exports[`new activity button does not show when there is no new activity 1`] = `
     onToggle={[Function]}
     placement="bottom end"
     positionTarget={null}
+    shadow="resting"
     shouldCloseOnDocumentClick={true}
     shouldCloseOnEscape={true}
     shouldContainFocus={false}
@@ -247,7 +248,10 @@ exports[`new activity button does not show when there is no new activity 1`] = `
   >
     <View
       as="div"
+      debug={false}
       display="auto"
+      overflowX="visible"
+      overflowY="visible"
       padding="large large medium"
     >
       <CloseButton
@@ -300,7 +304,7 @@ exports[`new activity button does not show when there is no new activity 1`] = `
 
 exports[`new activity button shows when there is new activity 1`] = `
 <div
-  className="undefined PlannerHeader"
+  className="PlannerHeader-styles__root PlannerHeader"
 >
   <Button
     as="button"
@@ -377,6 +381,7 @@ exports[`new activity button shows when there is new activity 1`] = `
     onToggle={[Function]}
     placement="bottom end"
     positionTarget={null}
+    shadow="resting"
     shouldCloseOnDocumentClick={true}
     shouldCloseOnEscape={true}
     shouldContainFocus={false}
@@ -545,7 +550,10 @@ exports[`new activity button shows when there is new activity 1`] = `
   >
     <View
       as="div"
+      debug={false}
       display="auto"
+      overflowX="visible"
+      overflowY="visible"
       padding="large large medium"
     >
       <CloseButton
@@ -598,7 +606,7 @@ exports[`new activity button shows when there is new activity 1`] = `
 
 exports[`renders the base component correctly with buttons and trays 1`] = `
 <div
-  className="undefined PlannerHeader"
+  className="PlannerHeader-styles__root PlannerHeader"
 >
   <Button
     as="button"
@@ -675,6 +683,7 @@ exports[`renders the base component correctly with buttons and trays 1`] = `
     onToggle={[Function]}
     placement="bottom end"
     positionTarget={null}
+    shadow="resting"
     shouldCloseOnDocumentClick={true}
     shouldCloseOnEscape={true}
     shouldContainFocus={false}
@@ -843,7 +852,10 @@ exports[`renders the base component correctly with buttons and trays 1`] = `
   >
     <View
       as="div"
+      debug={false}
       display="auto"
+      overflowX="visible"
+      overflowY="visible"
       padding="large large medium"
     >
       <CloseButton

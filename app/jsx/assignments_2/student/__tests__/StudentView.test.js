@@ -19,7 +19,7 @@ import React from 'react'
 import {mockAssignment} from '../test-utils'
 import {MockedProvider} from 'react-apollo/test-utils'
 import StudentView from '../StudentView'
-import {STUDENT_VIEW_QUERY} from '../assignmentData'
+import {GetAssignmentEnvVariables, STUDENT_VIEW_QUERY} from '../assignmentData'
 import {render, waitForElement} from 'react-testing-library'
 
 const mocks = [
@@ -38,17 +38,47 @@ const mocks = [
   }
 ]
 
-describe('Comments', () => {
+describe('StudentView', () => {
   it('renders normally', async () => {
     const {getByTestId} = render(
       <MockedProvider mocks={mocks} removeTypename addTypename>
         <StudentView assignmentLid="7" />
       </MockedProvider>
     )
-
     expect(
       await waitForElement(() => getByTestId('assignments-2-student-view'))
     ).toBeInTheDocument()
+  })
+
+  it('renders default env correctly', async () => {
+    const defaultEnv = GetAssignmentEnvVariables()
+
+    expect(defaultEnv).toEqual({
+      assignmentUrl: '',
+      courseId: null,
+      currentUser: null,
+      modulePrereq: null,
+      moduleUrl: ''
+    })
+  })
+
+  it('renders with env params set', async () => {
+    window.ENV = {
+      context_asset_string: 'test_1',
+      COURSE_ID: '1',
+      current_user: {display_name: 'bob', avatar_url: 'awesome.avatar.url'},
+      PREREQS: {}
+    }
+
+    const env = GetAssignmentEnvVariables()
+
+    expect(env).toEqual({
+      assignmentUrl: 'http://localhost/tests/1/assignments',
+      courseId: '1',
+      currentUser: {display_name: 'bob', avatar_url: 'awesome.avatar.url'},
+      modulePrereq: null,
+      moduleUrl: 'http://localhost/tests/1/modules'
+    })
   })
 
   it('renders loading', async () => {
@@ -80,5 +110,5 @@ it('renders error', async () => {
     </MockedProvider>
   )
 
-  expect(await waitForElement(() => getByText('Something broke unexpectedly.'))).toBeInTheDocument()
+  expect(await waitForElement(() => getByText('Sorry, Something Broke'))).toBeInTheDocument()
 })

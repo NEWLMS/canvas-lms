@@ -879,6 +879,18 @@ describe CoursesController, type: :request do
         expect(new_course).to be_available
       end
 
+      it "doesn't allow creating a published course for unverified users if account requires it" do
+        @account.settings[:require_confirmed_email] = true
+        @account.save!
+
+        json = api_call(:post, @resource_path,
+          @resource_params,
+          { :account_id => @account.id, :offer => true, :course => { :name => 'Test Course' } },
+          {}, {:expected_status => 401}
+        )
+        expect(json["status"]).to eq "unverified"
+      end
+
       it "doesn't offer a course if passed a false 'offer' parameter" do
         json = api_call(:post, @resource_path,
                         @resource_params,
@@ -1124,9 +1136,19 @@ describe CoursesController, type: :request do
       it "should allow updating only the offer parameter" do
         @course.workflow_state = "claimed"
         @course.save!
+
         api_call(:put, @path, @params, {:offer => 1})
+
         @course.reload
         expect(@course.workflow_state).to eq "available"
+      end
+
+      it "doesn't allow creating a published course for unverified users if account requires it" do
+        Account.default.tap{|a| a.settings[:require_confirmed_email] = true; a.save!}
+        @course.update_attribute(:workflow_state, "claimed")
+
+        json = api_call(:put, @path, @params, {:offer => 1}, {}, {:expected_status => 401})
+        expect(json["status"]).to eq "unverified"
       end
 
       it "should be able to update the storage_quota" do
@@ -1883,6 +1905,7 @@ describe CoursesController, type: :request do
     context "with override scores" do
       before(:once) do
         @course2.enable_feature!(:final_grades_override)
+        @course2.update!(allow_final_grade_override: true)
         student_enrollment = @course2.all_student_enrollments.first
         student_enrollment.scores.create!(
           course_score: true,
@@ -1892,24 +1915,78 @@ describe CoursesController, type: :request do
         )
       end
 
-      it "returns the override score instead of the current score" do
-        json_response = courses_api_index_call
-        expect(enrollment(json_response).fetch("computed_current_score")).to be 89.0
+      context "when Final Grade Override is enabled and allowed" do
+        it "includes the override score instead of the current score" do
+          json_response = courses_api_index_call
+          expect(enrollment(json_response).fetch("computed_current_score")).to be 89.0
+        end
+
+        it "includes the override grade instead of the current grade" do
+          json_response = courses_api_index_call
+          expect(enrollment(json_response).fetch("computed_current_grade")).to eq "B+"
+        end
+
+        it "includes the override score instead of the current final score" do
+          json_response = courses_api_index_call
+          expect(enrollment(json_response).fetch("computed_final_score")).to be 89.0
+        end
+
+        it "includes the override grade instead of the current final grade" do
+          json_response = courses_api_index_call
+          expect(enrollment(json_response).fetch("computed_final_grade")).to eq "B+"
+        end
       end
 
-      it "returns the override grade instead of the current grade" do
-        json_response = courses_api_index_call
-        expect(enrollment(json_response).fetch("computed_current_grade")).to eq "B+"
+      context "when Final Grade Override is not allowed" do
+        before(:once) do
+          @course2.update!(allow_final_grade_override: false)
+        end
+
+        it "includes the current score" do
+          json_response = courses_api_index_call
+          expect(enrollment(json_response).fetch("computed_current_score")).to be 60.0
+        end
+
+        it "includes the current grade" do
+          json_response = courses_api_index_call
+          expect(enrollment(json_response).fetch("computed_current_grade")).to eq "F"
+        end
+
+        it "includes the current final score" do
+          json_response = courses_api_index_call
+          expect(enrollment(json_response).fetch("computed_final_score")).to be 77.0
+        end
+
+        it "includes the current final grade" do
+          json_response = courses_api_index_call
+          expect(enrollment(json_response).fetch("computed_final_grade")).to eq "C+"
+        end
       end
 
-      it "returns the override score instead of the current final score" do
-        json_response = courses_api_index_call
-        expect(enrollment(json_response).fetch("computed_final_score")).to be 89.0
-      end
+      context "when Final Grade Override is disabled" do
+        before(:once) do
+          @course2.disable_feature!(:final_grades_override)
+        end
 
-      it "returns the override grade instead of the current final grade" do
-        json_response = courses_api_index_call
-        expect(enrollment(json_response).fetch("computed_final_grade")).to eq "B+"
+        it "includes the current score" do
+          json_response = courses_api_index_call
+          expect(enrollment(json_response).fetch("computed_current_score")).to be 60.0
+        end
+
+        it "includes the current grade" do
+          json_response = courses_api_index_call
+          expect(enrollment(json_response).fetch("computed_current_grade")).to eq "F"
+        end
+
+        it "includes the current final score" do
+          json_response = courses_api_index_call
+          expect(enrollment(json_response).fetch("computed_final_score")).to be 77.0
+        end
+
+        it "includes the current final grade" do
+          json_response = courses_api_index_call
+          expect(enrollment(json_response).fetch("computed_final_grade")).to eq "C+"
+        end
       end
     end
 
@@ -3509,6 +3586,7 @@ describe CoursesController, type: :request do
           :format => 'json'
         })
         expect(json).to eq({
+          'allow_final_grade_override' => false,
           'allow_student_discussion_topics' => true,
           'allow_student_forum_attachments' => false,
           'allow_student_discussion_editing' => true,
@@ -3529,6 +3607,8 @@ describe CoursesController, type: :request do
       end
 
       it "should update settings" do
+        @course.enable_feature!(:new_gradebook)
+        @course.enable_feature!(:final_grades_override)
         expect(Auditors::Course).to receive(:record_updated).
           with(anything, anything, anything, source: :api)
 
@@ -3538,6 +3618,7 @@ describe CoursesController, type: :request do
           :course_id => @course.to_param,
           :format => 'json'
         }, {
+          :allow_final_grade_override => true,
           :allow_student_discussion_topics => false,
           :allow_student_forum_attachments => true,
           :allow_student_discussion_editing => false,
@@ -3551,6 +3632,7 @@ describe CoursesController, type: :request do
           :home_page_announcement_limit => nil
         })
         expect(json).to eq({
+          'allow_final_grade_override' => true,
           'allow_student_discussion_topics' => false,
           'allow_student_forum_attachments' => true,
           'allow_student_discussion_editing' => false,
@@ -3569,6 +3651,7 @@ describe CoursesController, type: :request do
           'image' => nil
         })
         @course.reload
+        expect(@course.allow_final_grade_override?).to eq true
         expect(@course.allow_student_discussion_topics).to eq false
         expect(@course.allow_student_forum_attachments).to eq true
         expect(@course.allow_student_discussion_editing).to eq false
@@ -3594,6 +3677,7 @@ describe CoursesController, type: :request do
           :format => 'json'
         })
         expect(json).to eq({
+          'allow_final_grade_override' => false,
           'allow_student_discussion_topics' => true,
           'allow_student_forum_attachments' => false,
           'allow_student_discussion_editing' => true,

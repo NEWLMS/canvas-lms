@@ -30,10 +30,12 @@ import View from '@instructure/ui-layout/lib/components/View'
 Details.propTypes = {
   assignment: TeacherAssignmentShape.isRequired,
   onChangeAssignment: func.isRequired,
+  onValidate: func.isRequired,
+  invalidMessage: func.isRequired,
   readOnly: bool
 }
 Details.defaultProps = {
-  readOnly: true
+  readOnly: false
 }
 
 export default function Details(props) {
@@ -48,6 +50,8 @@ export default function Details(props) {
       <Overrides
         assignment={props.assignment}
         onChangeAssignment={props.onChangeAssignment}
+        onValidate={props.onValidate}
+        invalidMessage={props.invalidMessage}
         readOnly={props.readOnly}
       />
       {props.readOnly ? null : (

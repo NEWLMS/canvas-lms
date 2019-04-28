@@ -5917,6 +5917,76 @@ describe Assignment do
     end
   end
 
+  describe '#add_submission_comment' do
+    let(:assignment) { assignment_model(course: @course) }
+
+    it 'raises an error if original_student is nil' do
+      expect {
+        assignment.add_submission_comment(nil)
+      }.to raise_error 'Student Required'
+    end
+
+    context 'when the student is not in a group' do
+      let!(:associate_student_and_submission) {
+        assignment.submissions.find_by user: @student
+      }
+      let(:update_submission_response) {
+        assignment.add_submission_comment(@student, comment: 'WAT?')
+      }
+
+      it 'returns an Array' do
+        expect(update_submission_response.class).to eq Array
+      end
+
+      it 'returns a collection of submission comments' do
+        expect(update_submission_response.first.class).to eq SubmissionComment
+      end
+    end
+
+    context 'when the student is in a group' do
+      let!(:create_a_group_with_a_submitted_assignment) {
+        setup_assignment_with_group
+        @assignment.submit_homework(
+          @u1,
+          submission_type: 'online_text_entry',
+          body: 'Some text for you'
+        )
+      }
+
+      context 'when a comment is submitted' do
+        let(:update_assignment_with_comment) {
+          @assignment.add_submission_comment(
+            @u2,
+            comment: 'WAT?',
+            group_comment: true,
+            user_id: @course.teachers.first.id
+          )
+        }
+
+        it 'returns an Array' do
+          expect(update_assignment_with_comment).to be_an_instance_of Array
+        end
+
+        it 'creates a comment for each student in the group' do
+          expect {
+            update_assignment_with_comment
+          }.to change{ SubmissionComment.count }.by(@u1.groups.first.users.count)
+        end
+
+        it 'creates comments with the same group_comment_id' do
+          comments = update_assignment_with_comment
+          expect(comments.first.group_comment_id).to eq comments.last.group_comment_id
+        end
+      end
+
+      context 'when a comment is not submitted' do
+        it 'returns an Array' do
+          expect(@assignment.add_submission_comment(@u2).class).to eq Array
+        end
+      end
+    end
+  end
+
   describe "#update_submission" do
     let(:assignment) { assignment_model(course: @course) }
 
@@ -7090,6 +7160,12 @@ describe Assignment do
         }
       end
 
+      it "when given a Progress, sets the submission ids in the results" do
+        progress = @course.progresses.create!(tag: "post_submissions")
+        assignment.post_submissions(progress: progress, submission_ids: [student1_submission.id])
+        expect(progress.results[:submission_ids]).to match_array [student1_submission.id]
+      end
+
       context "when post policies are enabled" do
         it "unmutes the assignment if all submissions are now posted" do
           assignment.mute!
@@ -7112,6 +7188,46 @@ describe Assignment do
 
         assignment.post_submissions
         expect(assignment).to be_muted
+      end
+
+      describe "context module progressions" do
+        let(:context_module) { @course.context_modules.create! }
+        let(:student1) { @course.enroll_user(User.create!, "StudentEnrollment", enrollment_state: "active").user }
+        let(:student2) { @course.enroll_user(User.create!, "StudentEnrollment", enrollment_state: "active").user }
+        let(:tag) { context_module.add_item({id: assignment.id, type: "assignment"}) }
+
+        before(:each) do
+          context_module.update!(completion_requirements: {tag.id => {type: "min_score", min_score: 90}})
+          # Have a manual post policy to stop the evaluation of the requirement
+          # until post_submissions is called.
+          assignment.ensure_post_policy(post_manually: true)
+        end
+
+        it "updates the met requirements" do
+          assignment.grade_student(student1, grader: teacher, score: 100)
+          assignment.post_submissions
+          progression = context_module.context_module_progressions.find_by(user: student1)
+          requirement = {id: tag.id, type: "min_score", min_score: 90.0}
+          expect(progression.requirements_met).to include requirement
+        end
+
+        it "does not update the met requirements for students that did not meet requirement" do
+          assignment.grade_student(student1, grader: teacher, score: 20)
+          assignment.post_submissions
+          progression = context_module.context_module_progressions.find_by(user: student1)
+          requirement = {id: tag.id, type: "min_score", min_score: 90.0, score: 20.0}
+          expect(progression.incomplete_requirements).to include requirement
+        end
+
+        it "does not update the met requirements for students not included" do
+          assignment.grade_student(student1, grader: teacher, score: 100)
+          assignment.grade_student(student2, grader: teacher, score: 100)
+          student1_sub = assignment.submissions.find_by(user: student1)
+          assignment.post_submissions(submission_ids: [student1_sub])
+          progression = context_module.context_module_progressions.find_by(user: student2)
+          requirement = {id: tag.id, type: "min_score", min_score: 90.0, score: nil}
+          expect(progression.incomplete_requirements).to include requirement
+        end
       end
     end
 
@@ -7146,6 +7262,12 @@ describe Assignment do
         }.not_to change {
           assignment.submission_for_student(student1).posted_at
         }
+      end
+
+      it "when given a Progress, sets the submission ids in the results" do
+        progress = @course.progresses.create!(tag: "hide_submissions")
+        assignment.hide_submissions(progress: progress, submission_ids: [student1_submission.id])
+        expect(progress.results[:submission_ids]).to match_array [student1_submission.id]
       end
 
       context "when post policies are enabled" do

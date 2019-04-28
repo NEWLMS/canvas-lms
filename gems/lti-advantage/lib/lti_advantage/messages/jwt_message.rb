@@ -17,11 +17,10 @@ module LtiAdvantage::Messages
       sub
       version
       target_link_uri
-      lti11_legacy_user_id
     ].freeze
 
     TYPED_ATTRIBUTES = {
-      aud: Array,
+      aud: [Array, String],
       context: LtiAdvantage::Claims::Context,
       custom: Hash,
       extensions: Hash,

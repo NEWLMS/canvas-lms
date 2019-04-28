@@ -25,30 +25,45 @@ import TextArea from '@instructure/ui-forms/lib/components/TextArea'
 import TextInput from '@instructure/ui-forms/lib/components/TextInput'
 import View from '@instructure/ui-layout/lib/components/View'
 
-export default class ToolConfigurationForm extends React.Component {
-  state = {
-    configurationType: 'json'
-  }
+import ManualConfigurationForm from './ManualConfigurationForm'
 
+export default class ToolConfigurationForm extends React.Component {
   get toolConfiguration() {
     const {toolConfiguration} = this.props
     return toolConfiguration ? JSON.stringify(toolConfiguration) : ''
   }
 
-  handleConfigTypeChange = (e, option) => {
-    this.setState({
-      configurationType: option.value
-    })
+  generateToolConfiguration = () => {
+    return this.manualConfigRef.generateToolConfiguration();
   }
 
+  valid = () => {
+    return this.manualConfigRef.valid();
+  }
+
+  handleConfigTypeChange = (e, option) => {
+    this.props.dispatch(this.props.setLtiConfigurationMethod(option.value))
+  }
+
+  setManualConfigRef = node => this.manualConfigRef = node;
+
   configurationInput() {
-    if (this.state.configurationType === 'json') {
+    if (this.props.configurationMethod === 'json') {
       return (
         <TextArea
           name="tool_configuration"
           defaultValue={this.toolConfiguration}
           label={I18n.t('LTI 1.3 Configuration')}
           maxHeight="20rem"
+        />
+      )
+    } else if (this.props.configurationMethod === 'manual') {
+      return (
+        <ManualConfigurationForm
+          ref={this.setManualConfigRef}
+          toolConfiguration={this.props.manualToolConfiguration}
+          validScopes={this.props.validScopes}
+          validPlacements={this.props.validPlacements}
         />
       )
     }
@@ -68,10 +83,12 @@ export default class ToolConfigurationForm extends React.Component {
           {I18n.t('Configure')}
         </Heading>
         <Select
-          label="Medium"
-          assistiveText={I18n.t('2 options available. Use arrow keys to navigate options.')}
+          label="Method"
+          assistiveText={I18n.t('3 options available. Use arrow keys to navigate options.')}
           onChange={this.handleConfigTypeChange}
+          selectedOption={this.props.configurationMethod}
         >
+          <option value="manual">{I18n.t('Manual Entry')}</option>
           <option value="json">{I18n.t('Paste JSON')}</option>
           <option value="url">{I18n.t('Enter URL')}</option>
         </Select>
@@ -83,6 +100,16 @@ export default class ToolConfigurationForm extends React.Component {
 }
 
 ToolConfigurationForm.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   toolConfiguration: PropTypes.object.isRequired,
-  toolConfigurationUrl: PropTypes.string.isRequired
+  toolConfigurationUrl: PropTypes.string.isRequired,
+  validScopes: PropTypes.object.isRequired,
+  validPlacements: PropTypes.arrayOf(PropTypes.string).isRequired,
+  setLtiConfigurationMethod: PropTypes.func.isRequired,
+  configurationMethod: PropTypes.string,
+  manualToolConfiguration: PropTypes.object.isRequired
+}
+
+ToolConfigurationForm.defaultProps = {
+  configurationMethod: 'json'
 }

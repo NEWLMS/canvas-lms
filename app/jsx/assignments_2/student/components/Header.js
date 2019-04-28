@@ -16,20 +16,20 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react'
 import Flex, {FlexItem} from '@instructure/ui-layout/lib/components/Flex'
 import Heading from '@instructure/ui-elements/lib/components/Heading'
+import React from 'react'
 import ScreenReaderContent from '@instructure/ui-a11y/lib/components/ScreenReaderContent'
-import I18n from 'i18n!assignments_2_student_header'
 
 import AssignmentGroupModuleNav from './AssignmentGroupModuleNav'
-import SubmissionStatusPill from '../../shared/SubmissionStatusPill'
-import LatePolicyStatusDisplay from './LatePolicyStatusDisplay'
+import Attempt from './Attempt'
 import DateTitle from './DateTitle'
 import GradeDisplay from './GradeDisplay'
-import StepContainer from './StepContainer'
-import Attempt from './Attempt'
+import I18n from 'i18n!assignments_2_student_header'
+import LatePolicyStatusDisplay from './LatePolicyStatusDisplay'
 import {number} from 'prop-types'
+import StepContainer from './StepContainer'
+import SubmissionStatusPill from '../../shared/SubmissionStatusPill'
 
 import {StudentAssignmentShape} from '../assignmentData'
 
@@ -64,11 +64,17 @@ class Header extends React.Component {
   }
 
   render() {
-    const submission = this.props.assignment.submissionsConnection.nodes[0]
+    const submission = this.props.assignment.submissionsConnection
+      ? this.props.assignment.submissionsConnection.nodes[0]
+      : {}
     return (
       <React.Fragment>
         <div
-          data-testid="assignments-2-student-header"
+          data-testid={
+            this.state.isSticky
+              ? 'assignment-student-header-sticky'
+              : 'assignment-student-header-normal'
+          }
           id="assignments-2-student-header"
           className={
             this.state.isSticky
@@ -86,9 +92,9 @@ class Header extends React.Component {
           {!this.state.isSticky && <AssignmentGroupModuleNav assignment={this.props.assignment} />}
           <Flex margin={this.state.isSticky ? '0' : '0 0 medium 0'}>
             <FlexItem shrink>
-              <DateTitle assignment={this.props.assignment} />
+              <DateTitle isSticky={this.state.isSticky} assignment={this.props.assignment} />
             </FlexItem>
-            <FlexItem grow>
+            <FlexItem grow align="start">
               <GradeDisplay
                 gradingType={this.props.assignment.gradingType}
                 receivedGrade={submission.grade}
@@ -110,7 +116,9 @@ class Header extends React.Component {
                       </FlexItem>
                     )}
                   <FlexItem grow>
-                    <SubmissionStatusPill submissionStatus={submission.submissionStatus} />
+                    {submission.submissionStatus && (
+                      <SubmissionStatusPill submissionStatus={submission.submissionStatus} />
+                    )}
                   </FlexItem>
                 </Flex>
               </FlexItem>
@@ -120,14 +128,15 @@ class Header extends React.Component {
           <div className="assignment-pizza-header-outer">
             <div
               className="assignment-pizza-header-inner"
-              data-test-id={
+              data-testid={
                 this.state.isSticky
-                  ? 'assignment-student-header-sticky'
-                  : 'assignment-student-header-normal'
+                  ? 'assignment-student-pizza-header-sticky'
+                  : 'assignment-student-pizza-header-normal'
               }
             >
               <StepContainer
                 assignment={this.props.assignment}
+                forceLockStatus={!this.props.assignment.env.currentUser} // TODO: replace with new 'self' graphql query when ready
                 isCollapsed={this.state.isSticky}
                 collapsedLabel={I18n.t('Submitted')}
               />
@@ -140,7 +149,7 @@ class Header extends React.Component {
         }
         {this.state.isSticky && (
           <div
-            data-test-id="header-element-filler"
+            data-testid="header-element-filler"
             style={{height: `${this.state.nonStickyHeaderheight - this.props.scrollThreshold}px`}}
           />
         )}

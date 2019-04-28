@@ -97,6 +97,7 @@ class DiscussionTopic < ActiveRecord::Base
   after_save :schedule_delayed_transitions
   after_save :update_materialized_view_if_changed
   after_save :recalculate_progressions_if_sections_changed
+  after_save :sync_attachment_with_publish_state
   after_update :clear_streams_if_not_published
   after_create :create_participant
   after_create :create_materialized_view
@@ -218,6 +219,15 @@ class DiscussionTopic < ActiveRecord::Base
     # double delayed job ಠ_ಠ
     @should_schedule_delayed_post = nil
     @should_schedule_lock_at = nil
+  end
+
+  def sync_attachment_with_publish_state
+    if (self.saved_change_to_workflow_state? || self.saved_change_to_locked? || self.saved_change_to_attachment_id?) && self.attachment
+      unless self.attachment.hidden? # if it's already hidden leave alone
+        locked = !!(unpublished? || not_available_yet? || not_available_anymore?)
+        self.attachment.update_attribute(:locked, locked)
+      end
+    end
   end
 
   def update_subtopics
@@ -687,7 +697,7 @@ class DiscussionTopic < ActiveRecord::Base
   end
 
   scope :visible_to_student_sections, -> (student) {
-    visibility_scope = DiscussionTopicSectionVisibility.
+    visibility_scope = DiscussionTopicSectionVisibility.active.
       where("discussion_topic_section_visibilities.discussion_topic_id = discussion_topics.id").
       where("EXISTS (?)", Enrollment.active_or_pending.where(:user_id => student).
         where("enrollments.course_section_id = discussion_topic_section_visibilities.course_section_id")

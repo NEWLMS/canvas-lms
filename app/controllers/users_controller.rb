@@ -169,12 +169,14 @@ class UsersController < ApplicationController
   include I18nUtilities
   include CustomColorHelper
   include DashboardHelper
+  include Api::V1::Submission
 
   before_action :require_user, :only => [:grades, :merge, :kaltura_session,
     :ignore_item, :ignore_stream_item, :close_notification, :mark_avatar_image,
     :user_dashboard, :toggle_hide_dashcard_color_overlays,
     :masquerade, :external_tool, :dashboard_sidebar, :settings, :activity_stream,
-    :activity_stream_summary, :pandata_events_token, :dashboard_cards]
+    :activity_stream_summary, :pandata_events_token, :dashboard_cards,
+    :user_graded_submissions]
   before_action :require_registered_user, :only => [:delete_user_service,
     :create_user_service]
   before_action :reject_student_view_student, :only => [:delete_user_service,
@@ -800,11 +802,16 @@ class UsersController < ApplicationController
 
     # include concluded enrollments as well as active ones if requested
     include_concluded = params[:include].try(:include?, 'concluded')
-    @query   = params[:course].try(:[], :name) || params[:term]
-    @courses = @query.present? ?
-      @context.manageable_courses_name_like(@query, include_concluded) :
-      @context.manageable_courses(include_concluded).limit(500)
-    @courses = @courses.select("courses.*,#{Course.best_unicode_collation_key('name')} AS sort_key").order('sort_key').preload(:enrollment_term).to_a
+    limit = 500
+    @query = params[:course].try(:[], :name) || params[:term]
+    @courses = []
+    Shard.with_each_shard(@context.in_region_associated_shards) do
+      scope = @query.present? ?
+        @context.manageable_courses_name_like(@query, include_concluded) :
+        @context.manageable_courses(include_concluded).limit(limit)
+      @courses += scope.select("courses.*,#{Course.best_unicode_collation_key('name')} AS sort_key").order('sort_key').preload(:enrollment_term).to_a
+    end
+    @courses = @courses.sort_by(&:sort_key)[0, limit]
 
     cancel_cache_buster
     expires_in 30.minutes
@@ -1039,40 +1046,40 @@ class UsersController < ApplicationController
   #
   # @returns [Assignment]
   def missing_submissions
-    user = api_find(User, params[:user_id])
-    return render_unauthorized_action unless @current_user && user.grants_right?(@current_user, :read)
-
-    submissions = []
-
-    filter = Array(params[:filter])
-    only_submittable = filter.include?('submittable')
-
     Shackles.activate(:slave) do
+      user = api_find(User, params[:user_id])
+      return render_unauthorized_action unless @current_user && user.grants_right?(@current_user, :read)
+
+      submissions = []
+
+      filter = Array(params[:filter])
+      only_submittable = filter.include?('submittable')
+
       course_ids = user.participating_student_course_ids
       Shard.partition_by_shard(course_ids) do |shard_course_ids|
         subs = Submission.active.preload(:assignment).
           missing.
           where(user_id: user.id,
-          assignments: {context_id: shard_course_ids}).
+                assignments: {context_id: shard_course_ids}).
           merge(Assignment.published)
         subs = subs.merge(Assignment.not_locked) if only_submittable
         submissions = subs.order(:cached_due_date, :id)
       end
+      assignments = Api.paginate(submissions, self, api_v1_user_missing_submissions_url).map(&:assignment)
+
+      includes = Array(params[:include])
+      planner_overrides = includes.include?('planner_overrides')
+      include_course = includes.include?('course')
+      ActiveRecord::Associations::Preloader.new.preload(assignments, :context) if include_course
+
+      json = assignments.map do |as|
+        assmt_json = assignment_json(as, user, session, include_planner_override: planner_overrides)
+        assmt_json['course'] = course_json(as.context, user, session, [], nil) if include_course
+        assmt_json
+      end
+
+      render json: json
     end
-    assignments = Api.paginate(submissions, self, api_v1_user_missing_submissions_url).map(&:assignment)
-
-    includes = Array(params[:include])
-    planner_overrides = includes.include?('planner_overrides')
-    include_course = includes.include?('course')
-    ActiveRecord::Associations::Preloader.new.preload(assignments, :context) if include_course
-
-    json = assignments.map do |as|
-      assmt_json = assignment_json(as, user, session, include_planner_override: planner_overrides)
-      assmt_json['course'] = course_json(as.context, user, session, [], nil) if include_course
-      assmt_json
-    end
-
-    render json: json
   end
 
   def ignore_item
@@ -1204,40 +1211,42 @@ class UsersController < ApplicationController
   end
 
   def show
-    get_context
-    @context_account = @context.is_a?(Account) ? @context : @domain_root_account
-    @user = params[:id] && params[:id] != 'self' ? User.find(params[:id]) : @current_user
-    if authorized_action(@user, @current_user, :read_full_profile)
-      add_crumb(t('crumbs.profile', "%{user}'s profile", :user => @user.short_name), @user == @current_user ? user_profile_path(@current_user) : user_path(@user) )
+    Shackles.activate(:slave) do
+      get_context
+      @context_account = @context.is_a?(Account) ? @context : @domain_root_account
+      @user = params[:id] && params[:id] != 'self' ? User.find(params[:id]) : @current_user
+      if authorized_action(@user, @current_user, :read_full_profile)
+        add_crumb(t('crumbs.profile', "%{user}'s profile", :user => @user.short_name), @user == @current_user ? user_profile_path(@current_user) : user_path(@user) )
 
-      @group_memberships = @user.current_group_memberships
+        @group_memberships = @user.current_group_memberships
 
-      # course_section and enrollment term will only be used if the enrollment dates haven't been cached yet;
-      # maybe should just look at the first enrollment and check if it's cached to decide if we should include
-      # them here
-      @enrollments = @user.enrollments.
-        shard(@user).
-        where("enrollments.workflow_state<>'deleted' AND courses.workflow_state<>'deleted'").
-        eager_load(:course).
-        preload(:associated_user, :course_section, :enrollment_state, course: { enrollment_term: :enrollment_dates_overrides }).to_a
+        # course_section and enrollment term will only be used if the enrollment dates haven't been cached yet;
+        # maybe should just look at the first enrollment and check if it's cached to decide if we should include
+        # them here
+        @enrollments = @user.enrollments.
+          shard(@user).
+          where("enrollments.workflow_state<>'deleted' AND courses.workflow_state<>'deleted'").
+          eager_load(:course).
+          preload(:associated_user, :course_section, :enrollment_state, course: { enrollment_term: :enrollment_dates_overrides }).to_a
 
-      # restrict view for other users
-      if @user != @current_user
-        @enrollments = @enrollments.select{|e| e.grants_right?(@current_user, session, :read)}
-      end
-
-      @enrollments = @enrollments.sort_by {|e| [e.state_sortable, e.rank_sortable, e.course.name] }
-      # pre-populate the reverse association
-      @enrollments.each { |e| e.user = @user }
-
-      respond_to do |format|
-        format.html do
-          js_env(CONTEXT_USER_DISPLAY_NAME: @user.short_name,
-                 USER_ID: @user.id)
+        # restrict view for other users
+        if @user != @current_user
+          @enrollments = @enrollments.select{|e| e.grants_right?(@current_user, session, :read)}
         end
-        format.json do
-          render :json => user_json(@user, @current_user, session, %w{locale avatar_url},
-                                    @current_user.pseudonym.account)
+
+        @enrollments = @enrollments.sort_by {|e| [e.state_sortable, e.rank_sortable, e.course.name] }
+        # pre-populate the reverse association
+        @enrollments.each { |e| e.user = @user }
+
+        respond_to do |format|
+          format.html do
+            js_env(CONTEXT_USER_DISPLAY_NAME: @user.short_name,
+                   USER_ID: @user.id)
+          end
+          format.json do
+            render :json => user_json(@user, @current_user, session, %w{locale avatar_url},
+                                      @current_user.pseudonym.account)
+          end
         end
       end
     end
@@ -1272,7 +1281,7 @@ class UsersController < ApplicationController
 
   def external_tool
     @tool = ContextExternalTool.find_for(params[:id], @domain_root_account, :user_navigation)
-    @opaque_id = @tool.opaque_identifier_for(@current_user)
+    @opaque_id = @tool.opaque_identifier_for(@current_user, context: @domain_root_account)
     @resource_type = 'user_navigation'
 
     success_url = user_profile_url(@current_user)
@@ -1305,7 +1314,7 @@ class UsersController < ApplicationController
     end
 
     @lti_launch.params = adapter.generate_post_payload
-    @lti_launch.resource_url = @tool.login_or_launch_uri(extension_type: :user_navigation)
+    @lti_launch.resource_url = @tool.login_or_launch_url(extension_type: :user_navigation)
     @lti_launch.link_text = @tool.label_for(:user_navigation, I18n.locale)
     @lti_launch.analytics_id = @tool.tool_id
 
@@ -1501,6 +1510,8 @@ class UsersController < ApplicationController
     create_user
   end
 
+  BOOLEAN_PREFS = %i(manual_mark_as_read collapse_global_nav hide_dashcard_color_overlays).freeze
+
   # @API Update user settings.
   # Update an existing user's settings.
   #
@@ -1510,6 +1521,10 @@ class UsersController < ApplicationController
   #
   # @argument collapse_global_nav [Boolean]
   #   If true, the user's page loads with the global navigation collapsed
+  #
+  # @argument hide_dashcard_color_overlays [Boolean]
+  #   If true, images on course cards will be presented without being tinted
+  #   to match the course color.
   #
   # @example_request
   #
@@ -1523,28 +1538,17 @@ class UsersController < ApplicationController
     case
     when request.get?
       return unless authorized_action(user, @current_user, :read)
-      render(json: {
-        manual_mark_as_read: @current_user.manual_mark_as_read?,
-        collapse_global_nav: @current_user.collapse_global_nav?
-      })
+      render json: BOOLEAN_PREFS.each_with_object({}) { |pref, h| h[pref] = !!user.preferences[pref] }
     when request.put?
       return unless authorized_action(user, @current_user, [:manage, :manage_user_details])
-      unless params[:manual_mark_as_read].nil?
-        mark_as_read = value_to_boolean(params[:manual_mark_as_read])
-        user.preferences[:manual_mark_as_read] = mark_as_read
-      end
-      unless params[:collapse_global_nav].nil?
-        collapse_global_nav = value_to_boolean(params[:collapse_global_nav])
-        user.preferences[:collapse_global_nav] = collapse_global_nav
+      BOOLEAN_PREFS.each do |pref|
+       user.preferences[pref] = value_to_boolean(params[pref]) unless params[pref].nil?
       end
 
       respond_to do |format|
         format.json {
           if user.save
-            render(json: {
-              manual_mark_as_read: user.manual_mark_as_read?,
-              collapse_global_nav: user.collapse_global_nav?
-            })
+            render json: BOOLEAN_PREFS.each_with_object({}) { |pref, h| h[pref] = !!user.preferences[pref] }
           else
             render(json: user.errors, status: :bad_request)
           end
@@ -2067,10 +2071,12 @@ class UsersController < ApplicationController
     @entries = []
     cutoff = 1.week.ago
     @context.courses.each do |context|
-      @entries.concat context.assignments.active.where("updated_at>?", cutoff)
+      @entries.concat Assignments::ScopedToUser.new(context, @current_user, context.assignments.published.where("assignments.updated_at>?", cutoff)).scope
       @entries.concat context.calendar_events.active.where("updated_at>?", cutoff)
-      @entries.concat context.discussion_topics.active.where("updated_at>?", cutoff)
-      @entries.concat context.wiki_pages.not_deleted.where("updated_at>?", cutoff)
+      @entries.concat DiscussionTopic::ScopedToUser.new(context, @current_user, context.discussion_topics.published.where("discussion_topics.updated_at>?", cutoff)).scope.select { |dt|
+        !dt.locked_for?(@current_user, :check_policies => true)
+      }
+      @entries.concat WikiPages::ScopedToUser.new(context, @current_user, context.wiki_pages.published.where("wiki_pages.updated_at>?", cutoff)).scope
     end
     @entries.each do |entry|
       feed.entries << entry.to_atom(:include_context => true, :context => @context)
@@ -2153,6 +2159,54 @@ class UsersController < ApplicationController
   # should be considered irreversible. This will delete the user and move all
   # the data into the destination user.
   #
+  # User merge details and caveats:
+  # The from_user is the user that was deleted in the user_merge process.
+  # The destination_user is the user that remains, that is being split.
+  #
+  # Avatars:
+  # When both users have avatars, only the destination_users avatar will remain.
+  # When one user has an avatar, will it will end up on the destination_user.
+  #
+  # Terms of Use:
+  # If either user has accepted terms of use, it will be be left as accepted.
+  #
+  # Communication Channels:
+  # All unique communication channels moved to the destination_user.
+  # All notification preferences are moved to the destination_user.
+  #
+  # Enrollments:
+  # All unique enrollments are moved to the destination_user.
+  # When there is an enrollment that would end up making it so that a user would
+  # be observing themselves, the enrollment is not moved over.
+  # Everything that is tied to the from_user at the course level relating to the
+  # enrollment is also moved to the destination_user.
+  #
+  # Submissions:
+  # All submissions are moved to the destination_user. If there are enrollments
+  # for both users in the same course, we prefer submissions that have grades
+  # then submissions that have work in them, and if there are no grades or no
+  # work, they are not moved.
+  #
+  # Other notes:
+  # Access Tokens are moved on merge.
+  # Conversations are moved on merge.
+  # Favorites are moved on merge.
+  # Courses will commonly use LTI tools. LTI tools reference the user with IDs
+  # that are stored on a user object. Merging users deletes one user and moves
+  # all records from the deleted user to the destination_user. These IDs are
+  # kept for all enrollments, group_membership, and account_users for the
+  # from_user at the time of the merge. When the destination_user launches an
+  # LTI tool from a course that used to be the from_user's, it doesn't appear as
+  # a new user to the tool provider. Instead it will send the stored ids. The
+  # destination_user's LTI IDs remain as they were for the courses that they
+  # originally had. Future enrollments for the destination_user will use the IDs
+  # that are on the destination_user object. LTI IDs that are kept and tracked
+  # per context include lti_context_id, lti_id and uuid. APIs that return the
+  # LTI ids will return the one for the context that it is called for, except
+  # for the user uuid. The user UUID will display the destination_users uuid,
+  # and when getting the uuid from an api that is in a context that was
+  # recorded from a merge event, an additional attribute is added as past_uuid.
+  #
   # When finding users by SIS ids in different accounts the
   # destination_account_id is required.
   #
@@ -2207,6 +2261,57 @@ class UsersController < ApplicationController
   # previous user. Some items may have been deleted during a user_merge that
   # cannot be restored, and/or the data has become stale because of other
   # changes to the objects since the time of the user_merge.
+  #
+  # Split users details and caveats:
+  #
+  # The from_user is the user that was deleted in the user_merge process.
+  # The destination_user is the user that remains, that is being split.
+  #
+  # Avatars:
+  # When both users had avatars, both will be remain.
+  # When from_user had an avatar and destination_user did not have an avatar,
+  # the destination_user's avatar will be deleted if it still matches what was
+  # there are the time of the merge.
+  # If the destination_user's avatar was changed at anytime after the merge, it
+  # will remain on the destination user.
+  # If the from_user had an avatar it will be there after split.
+  #
+  # Terms of Use:
+  # If from_user had not accepted terms of use, they will be prompted again
+  # to accept terms of use after the split.
+  # If the destination_user had not accepted terms of use, hey will be prompted
+  # again to accept terms of use after the split.
+  # If neither user had accepted the terms of use, but since the time of the
+  # merge had accepted, both will be prompted to accept terms of use.
+  # If both had accepted terms of use, this will remain.
+  #
+  # Communication Channels:
+  # All communication channels are restored to what they were prior to the
+  # merge. If a communication channel was added after the merge, it will remain
+  # on the destination_user.
+  # Notification preferences remain with the communication channels.
+  #
+  # Enrollments:
+  # All enrollments from the time of the merge will be moved back to where they
+  # were. Enrollments created since the time of the merge that were created by
+  # sis_import will go to the user that owns that sis_id used for the import.
+  # Other new enrollments will remain on the destination_user.
+  # Everything that is tied to the destination_user at the course level relating
+  # to an enrollment is moved to the from_user. When both users are in the same
+  # course prior to merge this can cause some unexpected items to move.
+  #
+  # Submissions:
+  # Unlike other items tied to a course, submissions are explicitly recorded to
+  # avoid problems with grades.
+  # All submissions were moved are restored to the spot prior to merge.
+  # All submission that were created in a course that was moved in enrollments
+  # are moved over to the from_user.
+  #
+  # Other notes:
+  # Access Tokens are moved back on split.
+  # Conversations are moved back on split.
+  # Favorites that existing at the time of merge are moved back on split.
+  # LTI ids are restored to how they were prior to merge.
   #
   # @example_request
   #     curl https://<canvas>/api/v1/users/<user_id>/split \
@@ -2345,6 +2450,31 @@ class UsersController < ApplicationController
       props_token: props_token,
       expires_at: expires_at.to_f * 1000
     }
+  end
+
+  # @API Get a users most recently graded submissions
+  #
+  # @example_request
+  #     curl https://<canvas>/api/v1/users/<user_id>/graded_submissions \
+  #          -X POST \
+  #          -H 'Authorization: Bearer <token>'
+  #
+  # @returns [Submission]
+  #
+  def user_graded_submissions
+    @user = api_find(User, params[:id])
+    if authorized_action(@user, @current_user, :read_grades)
+      collections = []
+      # Plannable Bookmarker enables descending order
+      bookmarker = Plannable::Bookmarker.new(Submission, true, :graded_at, :id)
+      Shard.with_each_shard(@user.associated_shards) do
+        collections << [Shard.current.id, BookmarkedCollection.wrap(bookmarker, Submission.for_user(@user).graded)]
+      end
+
+      scope = BookmarkedCollection.merge(*collections)
+      submissions = Api.paginate(scope, self, api_v1_user_submissions_url)
+      render(json: submissions.map{ |s| submission_json(s, s.assignment, @current_user, session) })
+    end
   end
 
   protected

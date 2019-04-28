@@ -20,15 +20,14 @@ import React from 'react'
 import {bool, func, oneOf, string} from 'prop-types'
 import I18n from 'i18n!assignments_2'
 
+import {showFlashAlert} from 'jsx/shared/FlashAlert'
+
 import {Text} from '@instructure/ui-elements'
 
 import EditableHeading from './EditableHeading'
 
 const nameLabel = I18n.t('Edit assignment name')
-const invalidMessage = I18n.t('Assignment name is required')
 const namePlaceholder = I18n.t('Assignment name')
-
-const isNameValid = (required, name) => !required || name
 
 export default class AssignmentName extends React.Component {
   static propTypes = {
@@ -36,12 +35,12 @@ export default class AssignmentName extends React.Component {
     name: string,
     onChange: func.isRequired,
     onChangeMode: func.isRequired,
-    required: bool,
+    onValidate: func.isRequired,
+    invalidMessage: func.isRequired,
     readOnly: bool
   }
 
   static defaultProps = {
-    required: true,
     readOnly: false
   }
 
@@ -49,38 +48,33 @@ export default class AssignmentName extends React.Component {
     super(props)
 
     this.state = {
-      strValue: props.name,
-      isValid: isNameValid(this.props.required, props.name)
+      isValid: props.onValidate('name', props.name)
     }
   }
 
   static getDerivedStateFromProps(props, state) {
-    // if the current state is invalid, don't replace the state
-    // it's there to track invalid values
-    if (state.isValid) {
-      return {
-        strValue: props.name,
-        isValid: isNameValid(props.required, props.name)
-      }
-    }
-    return null
+    const isValid = props.onValidate('name', props.name)
+    return isValid !== state.isValid ? {isValid} : null
   }
 
   handleNameChange = name => {
-    const isValid = isNameValid(this.props.required, name)
-    this.setState({isValid, strValue: name}, () => {
-      if (isValid) {
-        this.props.onChange(name)
+    const isValid = this.props.onValidate('name', name)
+    this.setState({isValid}, () => {
+      if (!isValid) {
+        showFlashAlert({
+          message: this.props.invalidMessage('name') || I18n.t('Error'),
+          type: 'error',
+          srOnly: true
+        })
       }
+      this.props.onChange(name)
     })
   }
-
-  isValid = name => isNameValid(this.props.required, name)
 
   render() {
     const msg = this.state.isValid ? null : (
       <div>
-        <Text color="error">{invalidMessage}</Text>
+        <Text color="error">{this.props.invalidMessage('name')}</Text>
       </div>
     )
     return (
@@ -89,13 +83,12 @@ export default class AssignmentName extends React.Component {
           mode={this.props.mode}
           viewAs="div"
           level="h1"
-          value={this.state.strValue}
+          value={this.props.name}
           onChange={this.handleNameChange}
           onChangeMode={this.props.onChangeMode}
-          isValid={this.isValid}
           placeholder={namePlaceholder}
           label={nameLabel}
-          required={this.props.required}
+          required
           readOnly={this.props.readOnly}
         />
         {msg}

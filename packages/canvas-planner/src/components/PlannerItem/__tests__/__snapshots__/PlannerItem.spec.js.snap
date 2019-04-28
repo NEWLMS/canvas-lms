@@ -2,14 +2,16 @@
 
 exports[`does not render end time if the same as start time 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -31,6 +33,7 @@ exports[`does not render end time if the same as start time 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -38,6 +41,7 @@ exports[`does not render end time if the same as start time 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -46,12 +50,18 @@ exports[`does not render end time if the same as start time 1`] = `
   >
     <IconCalendarMonth />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -62,6 +72,7 @@ exports[`does not render end time if the same as start time 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -70,6 +81,7 @@ exports[`does not render end time if the same as start time 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             iconPlacement="start"
             linkRef={[Function]}
@@ -116,13 +128,17 @@ exports[`does not render end time if the same as start time 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -145,14 +161,16 @@ exports[`does not render end time if the same as start time 1`] = `
 
 exports[`prefers to render feedback if it and the location are available 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -174,6 +192,7 @@ exports[`prefers to render feedback if it and the location are available 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -181,6 +200,7 @@ exports[`prefers to render feedback if it and the location are available 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -189,12 +209,18 @@ exports[`prefers to render feedback if it and the location are available 1`] = `
   >
     <IconAssignment />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -205,6 +231,7 @@ exports[`prefers to render feedback if it and the location are available 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -213,6 +240,7 @@ exports[`prefers to render feedback if it and the location are available 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -240,13 +268,17 @@ exports[`prefers to render feedback if it and the location are available 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -263,8 +295,12 @@ exports[`prefers to render feedback if it and the location are available 1`] = `
         </div>
       </div>
     </div>
-    <div>
-      <span>
+    <div
+      className="PlannerItem-styles__feedback"
+    >
+      <span
+        className="PlannerItem-styles__feedbackAvatar"
+      >
         <Avatar
           inline={true}
           name="Dr. David Bowman"
@@ -274,7 +310,9 @@ exports[`prefers to render feedback if it and the location are available 1`] = `
           variant="circle"
         />
       </span>
-      <span>
+      <span
+        className="PlannerItem-styles__feedbackComment"
+      >
         <Text
           as="span"
           fontStyle="italic"
@@ -291,14 +329,16 @@ exports[`prefers to render feedback if it and the location are available 1`] = `
 
 exports[`renders Announcement correctly with everything 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -320,6 +360,7 @@ exports[`renders Announcement correctly with everything 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -327,6 +368,7 @@ exports[`renders Announcement correctly with everything 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -335,12 +377,18 @@ exports[`renders Announcement correctly with everything 1`] = `
   >
     <IconAnnouncement />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -351,6 +399,7 @@ exports[`renders Announcement correctly with everything 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -359,6 +408,7 @@ exports[`renders Announcement correctly with everything 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -386,13 +436,17 @@ exports[`renders Announcement correctly with everything 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__score"
+          >
             <Text
               as="span"
               color="secondary"
@@ -416,7 +470,9 @@ exports[`renders Announcement correctly with everything 1`] = `
               </Text>
             </Text>
           </div>
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -439,14 +495,16 @@ exports[`renders Announcement correctly with everything 1`] = `
 
 exports[`renders Announcement correctly with just date 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -468,6 +526,7 @@ exports[`renders Announcement correctly with just date 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -475,6 +534,7 @@ exports[`renders Announcement correctly with just date 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -483,12 +543,18 @@ exports[`renders Announcement correctly with just date 1`] = `
   >
     <IconAnnouncement />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -499,6 +565,7 @@ exports[`renders Announcement correctly with just date 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -507,6 +574,7 @@ exports[`renders Announcement correctly with just date 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -534,13 +602,17 @@ exports[`renders Announcement correctly with just date 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -563,14 +635,16 @@ exports[`renders Announcement correctly with just date 1`] = `
 
 exports[`renders Announcement correctly with just points 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -592,6 +666,7 @@ exports[`renders Announcement correctly with just points 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -599,6 +674,7 @@ exports[`renders Announcement correctly with just points 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -607,12 +683,18 @@ exports[`renders Announcement correctly with just points 1`] = `
   >
     <IconAnnouncement />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -623,6 +705,7 @@ exports[`renders Announcement correctly with just points 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -631,6 +714,7 @@ exports[`renders Announcement correctly with just points 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -658,13 +742,17 @@ exports[`renders Announcement correctly with just points 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__score"
+          >
             <Text
               as="span"
               color="secondary"
@@ -688,7 +776,9 @@ exports[`renders Announcement correctly with just points 1`] = `
               </Text>
             </Text>
           </div>
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -711,14 +801,16 @@ exports[`renders Announcement correctly with just points 1`] = `
 
 exports[`renders Announcement correctly without right side content 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -740,6 +832,7 @@ exports[`renders Announcement correctly without right side content 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -747,6 +840,7 @@ exports[`renders Announcement correctly without right side content 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -755,12 +849,18 @@ exports[`renders Announcement correctly without right side content 1`] = `
   >
     <IconAnnouncement />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -771,6 +871,7 @@ exports[`renders Announcement correctly without right side content 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -779,6 +880,7 @@ exports[`renders Announcement correctly without right side content 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -806,13 +908,17 @@ exports[`renders Announcement correctly without right side content 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -835,14 +941,16 @@ exports[`renders Announcement correctly without right side content 1`] = `
 
 exports[`renders Assignment correctly with everything 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -864,6 +972,7 @@ exports[`renders Assignment correctly with everything 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -871,6 +980,7 @@ exports[`renders Assignment correctly with everything 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -879,12 +989,18 @@ exports[`renders Assignment correctly with everything 1`] = `
   >
     <IconAssignment />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -895,6 +1011,7 @@ exports[`renders Assignment correctly with everything 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -903,6 +1020,7 @@ exports[`renders Assignment correctly with everything 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://www.non_default_url.com"
             iconPlacement="start"
@@ -930,13 +1048,17 @@ exports[`renders Assignment correctly with everything 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__score"
+          >
             <Text
               as="span"
               color="secondary"
@@ -960,7 +1082,9 @@ exports[`renders Assignment correctly with everything 1`] = `
               </Text>
             </Text>
           </div>
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -983,14 +1107,16 @@ exports[`renders Assignment correctly with everything 1`] = `
 
 exports[`renders Assignment correctly with just date 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -1012,6 +1138,7 @@ exports[`renders Assignment correctly with just date 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -1019,6 +1146,7 @@ exports[`renders Assignment correctly with just date 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -1027,12 +1155,18 @@ exports[`renders Assignment correctly with just date 1`] = `
   >
     <IconAssignment />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -1043,6 +1177,7 @@ exports[`renders Assignment correctly with just date 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -1051,6 +1186,7 @@ exports[`renders Assignment correctly with just date 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -1078,13 +1214,17 @@ exports[`renders Assignment correctly with just date 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -1107,14 +1247,16 @@ exports[`renders Assignment correctly with just date 1`] = `
 
 exports[`renders Assignment correctly with just points 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -1136,6 +1278,7 @@ exports[`renders Assignment correctly with just points 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -1143,6 +1286,7 @@ exports[`renders Assignment correctly with just points 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -1151,12 +1295,18 @@ exports[`renders Assignment correctly with just points 1`] = `
   >
     <IconAssignment />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -1167,6 +1317,7 @@ exports[`renders Assignment correctly with just points 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -1175,6 +1326,7 @@ exports[`renders Assignment correctly with just points 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -1202,13 +1354,17 @@ exports[`renders Assignment correctly with just points 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__score"
+          >
             <Text
               as="span"
               color="secondary"
@@ -1232,7 +1388,9 @@ exports[`renders Assignment correctly with just points 1`] = `
               </Text>
             </Text>
           </div>
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -1255,14 +1413,16 @@ exports[`renders Assignment correctly with just points 1`] = `
 
 exports[`renders Assignment correctly without right side content 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -1284,6 +1444,7 @@ exports[`renders Assignment correctly without right side content 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -1291,6 +1452,7 @@ exports[`renders Assignment correctly without right side content 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -1299,12 +1461,18 @@ exports[`renders Assignment correctly without right side content 1`] = `
   >
     <IconAssignment />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -1315,6 +1483,7 @@ exports[`renders Assignment correctly without right side content 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -1323,6 +1492,7 @@ exports[`renders Assignment correctly without right side content 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -1350,13 +1520,17 @@ exports[`renders Assignment correctly without right side content 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -1379,14 +1553,16 @@ exports[`renders Assignment correctly without right side content 1`] = `
 
 exports[`renders Calendar Event correctly with an all day date 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -1408,6 +1584,7 @@ exports[`renders Calendar Event correctly with an all day date 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -1415,6 +1592,7 @@ exports[`renders Calendar Event correctly with an all day date 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -1423,12 +1601,18 @@ exports[`renders Calendar Event correctly with an all day date 1`] = `
   >
     <IconCalendarMonth />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -1439,6 +1623,7 @@ exports[`renders Calendar Event correctly with an all day date 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -1447,6 +1632,7 @@ exports[`renders Calendar Event correctly with an all day date 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             iconPlacement="start"
             linkRef={[Function]}
@@ -1492,13 +1678,17 @@ exports[`renders Calendar Event correctly with an all day date 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -1521,14 +1711,16 @@ exports[`renders Calendar Event correctly with an all day date 1`] = `
 
 exports[`renders Calendar Event correctly with everything 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -1550,6 +1742,7 @@ exports[`renders Calendar Event correctly with everything 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -1557,6 +1750,7 @@ exports[`renders Calendar Event correctly with everything 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -1565,12 +1759,18 @@ exports[`renders Calendar Event correctly with everything 1`] = `
   >
     <IconCalendarMonth />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -1581,6 +1781,7 @@ exports[`renders Calendar Event correctly with everything 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -1589,6 +1790,7 @@ exports[`renders Calendar Event correctly with everything 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             iconPlacement="start"
             linkRef={[Function]}
@@ -1634,13 +1836,17 @@ exports[`renders Calendar Event correctly with everything 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__score"
+          >
             <Text
               as="span"
               color="secondary"
@@ -1664,7 +1870,9 @@ exports[`renders Calendar Event correctly with everything 1`] = `
               </Text>
             </Text>
           </div>
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -1687,14 +1895,16 @@ exports[`renders Calendar Event correctly with everything 1`] = `
 
 exports[`renders Calendar Event correctly with just date 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -1716,6 +1926,7 @@ exports[`renders Calendar Event correctly with just date 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -1723,6 +1934,7 @@ exports[`renders Calendar Event correctly with just date 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -1731,12 +1943,18 @@ exports[`renders Calendar Event correctly with just date 1`] = `
   >
     <IconCalendarMonth />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -1747,6 +1965,7 @@ exports[`renders Calendar Event correctly with just date 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -1755,6 +1974,7 @@ exports[`renders Calendar Event correctly with just date 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             iconPlacement="start"
             linkRef={[Function]}
@@ -1800,13 +2020,17 @@ exports[`renders Calendar Event correctly with just date 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -1829,14 +2053,16 @@ exports[`renders Calendar Event correctly with just date 1`] = `
 
 exports[`renders Calendar Event correctly with start and end time 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -1858,6 +2084,7 @@ exports[`renders Calendar Event correctly with start and end time 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -1865,6 +2092,7 @@ exports[`renders Calendar Event correctly with start and end time 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -1873,12 +2101,18 @@ exports[`renders Calendar Event correctly with start and end time 1`] = `
   >
     <IconCalendarMonth />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -1889,6 +2123,7 @@ exports[`renders Calendar Event correctly with start and end time 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -1897,6 +2132,7 @@ exports[`renders Calendar Event correctly with start and end time 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             iconPlacement="start"
             linkRef={[Function]}
@@ -1943,13 +2179,17 @@ exports[`renders Calendar Event correctly with start and end time 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className="undefined"
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics PlannerItem-styles__with_end_time"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -1972,14 +2212,16 @@ exports[`renders Calendar Event correctly with start and end time 1`] = `
 
 exports[`renders Calendar Event correctly without right side content 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -2001,6 +2243,7 @@ exports[`renders Calendar Event correctly without right side content 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -2008,6 +2251,7 @@ exports[`renders Calendar Event correctly without right side content 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -2016,12 +2260,18 @@ exports[`renders Calendar Event correctly without right side content 1`] = `
   >
     <IconCalendarMonth />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -2032,6 +2282,7 @@ exports[`renders Calendar Event correctly without right side content 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -2040,6 +2291,7 @@ exports[`renders Calendar Event correctly without right side content 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             iconPlacement="start"
             linkRef={[Function]}
@@ -2085,13 +2337,17 @@ exports[`renders Calendar Event correctly without right side content 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -2114,14 +2370,16 @@ exports[`renders Calendar Event correctly without right side content 1`] = `
 
 exports[`renders Discussion correctly with everything 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -2143,6 +2401,7 @@ exports[`renders Discussion correctly with everything 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -2150,6 +2409,7 @@ exports[`renders Discussion correctly with everything 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -2158,12 +2418,18 @@ exports[`renders Discussion correctly with everything 1`] = `
   >
     <IconDiscussion />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -2174,6 +2440,7 @@ exports[`renders Discussion correctly with everything 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -2182,6 +2449,7 @@ exports[`renders Discussion correctly with everything 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -2209,13 +2477,17 @@ exports[`renders Discussion correctly with everything 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__score"
+          >
             <Text
               as="span"
               color="secondary"
@@ -2239,7 +2511,9 @@ exports[`renders Discussion correctly with everything 1`] = `
               </Text>
             </Text>
           </div>
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -2262,14 +2536,16 @@ exports[`renders Discussion correctly with everything 1`] = `
 
 exports[`renders Discussion correctly with just date 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -2291,6 +2567,7 @@ exports[`renders Discussion correctly with just date 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -2298,6 +2575,7 @@ exports[`renders Discussion correctly with just date 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -2306,12 +2584,18 @@ exports[`renders Discussion correctly with just date 1`] = `
   >
     <IconDiscussion />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -2322,6 +2606,7 @@ exports[`renders Discussion correctly with just date 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -2330,6 +2615,7 @@ exports[`renders Discussion correctly with just date 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -2357,13 +2643,17 @@ exports[`renders Discussion correctly with just date 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -2386,14 +2676,16 @@ exports[`renders Discussion correctly with just date 1`] = `
 
 exports[`renders Discussion correctly with just points 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -2415,6 +2707,7 @@ exports[`renders Discussion correctly with just points 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -2422,6 +2715,7 @@ exports[`renders Discussion correctly with just points 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -2430,12 +2724,18 @@ exports[`renders Discussion correctly with just points 1`] = `
   >
     <IconDiscussion />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -2446,6 +2746,7 @@ exports[`renders Discussion correctly with just points 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -2454,6 +2755,7 @@ exports[`renders Discussion correctly with just points 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -2481,13 +2783,17 @@ exports[`renders Discussion correctly with just points 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__score"
+          >
             <Text
               as="span"
               color="secondary"
@@ -2511,7 +2817,9 @@ exports[`renders Discussion correctly with just points 1`] = `
               </Text>
             </Text>
           </div>
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -2534,14 +2842,16 @@ exports[`renders Discussion correctly with just points 1`] = `
 
 exports[`renders Discussion correctly without right side content 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -2563,6 +2873,7 @@ exports[`renders Discussion correctly without right side content 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -2570,6 +2881,7 @@ exports[`renders Discussion correctly without right side content 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -2578,12 +2890,18 @@ exports[`renders Discussion correctly without right side content 1`] = `
   >
     <IconDiscussion />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -2594,6 +2912,7 @@ exports[`renders Discussion correctly without right side content 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -2602,6 +2921,7 @@ exports[`renders Discussion correctly without right side content 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -2629,13 +2949,17 @@ exports[`renders Discussion correctly without right side content 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -2658,14 +2982,16 @@ exports[`renders Discussion correctly without right side content 1`] = `
 
 exports[`renders Note correctly with Group 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#F06291",
             "checkedBackground": "#F06291",
             "checkedBorderColor": "#F06291",
@@ -2687,6 +3013,7 @@ exports[`renders Note correctly with Group 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -2694,6 +3021,7 @@ exports[`renders Note correctly with Group 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#F06291",
@@ -2702,12 +3030,18 @@ exports[`renders Note correctly with Group 1`] = `
   >
     <IconDocument />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -2718,6 +3052,7 @@ exports[`renders Note correctly with Group 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -2726,6 +3061,7 @@ exports[`renders Note correctly with Group 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="/groups/9/pages/this-is-an-account-level-group-page"
             iconPlacement="start"
@@ -2753,13 +3089,17 @@ exports[`renders Note correctly with Group 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -2782,14 +3122,16 @@ exports[`renders Note correctly with Group 1`] = `
 
 exports[`renders Note correctly with everything 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": undefined,
             "checkedBackground": undefined,
             "checkedBorderColor": undefined,
@@ -2811,6 +3153,7 @@ exports[`renders Note correctly with everything 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -2818,6 +3161,7 @@ exports[`renders Note correctly with everything 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__avatar"
     style={
       Object {
         "color": undefined,
@@ -2833,12 +3177,18 @@ exports[`renders Note correctly with everything 1`] = `
       variant="circle"
     />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -2849,6 +3199,7 @@ exports[`renders Note correctly with everything 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -2857,6 +3208,7 @@ exports[`renders Note correctly with everything 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             iconPlacement="start"
             linkRef={[Function]}
@@ -2884,18 +3236,22 @@ exports[`renders Note correctly with everything 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__editButton"
+          >
             <ApplyTheme
               immutable={false}
               theme={
                 Object {
-                  Symbol(Button__dUxGkD): Object {
+                  Symbol(Button__eHiXd): Object {
                     "iconColor": undefined,
                   },
                 }
@@ -2921,7 +3277,9 @@ exports[`renders Note correctly with everything 1`] = `
               </Button>
             </ApplyTheme>
           </div>
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -2944,14 +3302,16 @@ exports[`renders Note correctly with everything 1`] = `
 
 exports[`renders Note correctly without Course 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": undefined,
             "checkedBackground": undefined,
             "checkedBorderColor": undefined,
@@ -2973,6 +3333,7 @@ exports[`renders Note correctly without Course 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -2980,6 +3341,7 @@ exports[`renders Note correctly without Course 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__avatar"
     style={
       Object {
         "color": undefined,
@@ -2995,12 +3357,18 @@ exports[`renders Note correctly without Course 1`] = `
       variant="circle"
     />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -3011,6 +3379,7 @@ exports[`renders Note correctly without Course 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -3019,6 +3388,7 @@ exports[`renders Note correctly without Course 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             iconPlacement="start"
             linkRef={[Function]}
@@ -3046,18 +3416,22 @@ exports[`renders Note correctly without Course 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__editButton"
+          >
             <ApplyTheme
               immutable={false}
               theme={
                 Object {
-                  Symbol(Button__dUxGkD): Object {
+                  Symbol(Button__eHiXd): Object {
                     "iconColor": undefined,
                   },
                 }
@@ -3083,7 +3457,9 @@ exports[`renders Note correctly without Course 1`] = `
               </Button>
             </ApplyTheme>
           </div>
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -3106,14 +3482,16 @@ exports[`renders Note correctly without Course 1`] = `
 
 exports[`renders Page correctly with everything 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -3135,6 +3513,7 @@ exports[`renders Page correctly with everything 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -3142,6 +3521,7 @@ exports[`renders Page correctly with everything 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -3150,12 +3530,18 @@ exports[`renders Page correctly with everything 1`] = `
   >
     <IconDocument />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -3166,6 +3552,7 @@ exports[`renders Page correctly with everything 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -3174,6 +3561,7 @@ exports[`renders Page correctly with everything 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -3201,13 +3589,17 @@ exports[`renders Page correctly with everything 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__score"
+          >
             <Text
               as="span"
               color="secondary"
@@ -3231,7 +3623,9 @@ exports[`renders Page correctly with everything 1`] = `
               </Text>
             </Text>
           </div>
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -3254,14 +3648,16 @@ exports[`renders Page correctly with everything 1`] = `
 
 exports[`renders Page correctly with just date 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -3283,6 +3679,7 @@ exports[`renders Page correctly with just date 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -3290,6 +3687,7 @@ exports[`renders Page correctly with just date 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -3298,12 +3696,18 @@ exports[`renders Page correctly with just date 1`] = `
   >
     <IconDocument />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -3314,6 +3718,7 @@ exports[`renders Page correctly with just date 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -3322,6 +3727,7 @@ exports[`renders Page correctly with just date 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -3349,13 +3755,17 @@ exports[`renders Page correctly with just date 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -3378,14 +3788,16 @@ exports[`renders Page correctly with just date 1`] = `
 
 exports[`renders Page correctly with just points 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -3407,6 +3819,7 @@ exports[`renders Page correctly with just points 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -3414,6 +3827,7 @@ exports[`renders Page correctly with just points 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -3422,12 +3836,18 @@ exports[`renders Page correctly with just points 1`] = `
   >
     <IconDocument />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -3438,6 +3858,7 @@ exports[`renders Page correctly with just points 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -3446,6 +3867,7 @@ exports[`renders Page correctly with just points 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -3473,13 +3895,17 @@ exports[`renders Page correctly with just points 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__score"
+          >
             <Text
               as="span"
               color="secondary"
@@ -3503,7 +3929,9 @@ exports[`renders Page correctly with just points 1`] = `
               </Text>
             </Text>
           </div>
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -3526,14 +3954,16 @@ exports[`renders Page correctly with just points 1`] = `
 
 exports[`renders Page correctly without right side content 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -3555,6 +3985,7 @@ exports[`renders Page correctly without right side content 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -3562,6 +3993,7 @@ exports[`renders Page correctly without right side content 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -3570,12 +4002,18 @@ exports[`renders Page correctly without right side content 1`] = `
   >
     <IconDocument />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -3586,6 +4024,7 @@ exports[`renders Page correctly without right side content 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -3594,6 +4033,7 @@ exports[`renders Page correctly without right side content 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -3621,13 +4061,17 @@ exports[`renders Page correctly without right side content 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -3650,14 +4094,16 @@ exports[`renders Page correctly without right side content 1`] = `
 
 exports[`renders Quiz correctly with everything 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -3679,6 +4125,7 @@ exports[`renders Quiz correctly with everything 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -3686,6 +4133,7 @@ exports[`renders Quiz correctly with everything 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -3694,12 +4142,18 @@ exports[`renders Quiz correctly with everything 1`] = `
   >
     <IconQuiz />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -3710,6 +4164,7 @@ exports[`renders Quiz correctly with everything 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -3718,6 +4173,7 @@ exports[`renders Quiz correctly with everything 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -3745,13 +4201,17 @@ exports[`renders Quiz correctly with everything 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__score"
+          >
             <Text
               as="span"
               color="secondary"
@@ -3775,7 +4235,9 @@ exports[`renders Quiz correctly with everything 1`] = `
               </Text>
             </Text>
           </div>
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -3798,14 +4260,16 @@ exports[`renders Quiz correctly with everything 1`] = `
 
 exports[`renders Quiz correctly with just date 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -3827,6 +4291,7 @@ exports[`renders Quiz correctly with just date 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -3834,6 +4299,7 @@ exports[`renders Quiz correctly with just date 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -3842,12 +4308,18 @@ exports[`renders Quiz correctly with just date 1`] = `
   >
     <IconQuiz />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -3858,6 +4330,7 @@ exports[`renders Quiz correctly with just date 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -3866,6 +4339,7 @@ exports[`renders Quiz correctly with just date 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -3893,13 +4367,17 @@ exports[`renders Quiz correctly with just date 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -3922,14 +4400,16 @@ exports[`renders Quiz correctly with just date 1`] = `
 
 exports[`renders Quiz correctly with just points 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -3951,6 +4431,7 @@ exports[`renders Quiz correctly with just points 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -3958,6 +4439,7 @@ exports[`renders Quiz correctly with just points 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -3966,12 +4448,18 @@ exports[`renders Quiz correctly with just points 1`] = `
   >
     <IconQuiz />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -3982,6 +4470,7 @@ exports[`renders Quiz correctly with just points 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -3990,6 +4479,7 @@ exports[`renders Quiz correctly with just points 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -4017,13 +4507,17 @@ exports[`renders Quiz correctly with just points 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__score"
+          >
             <Text
               as="span"
               color="secondary"
@@ -4047,7 +4541,9 @@ exports[`renders Quiz correctly with just points 1`] = `
               </Text>
             </Text>
           </div>
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -4070,14 +4566,16 @@ exports[`renders Quiz correctly with just points 1`] = `
 
 exports[`renders Quiz correctly without right side content 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -4099,6 +4597,7 @@ exports[`renders Quiz correctly without right side content 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -4106,6 +4605,7 @@ exports[`renders Quiz correctly without right side content 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -4114,12 +4614,18 @@ exports[`renders Quiz correctly without right side content 1`] = `
   >
     <IconQuiz />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -4130,6 +4636,7 @@ exports[`renders Quiz correctly without right side content 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -4138,6 +4645,7 @@ exports[`renders Quiz correctly without right side content 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -4165,13 +4673,17 @@ exports[`renders Quiz correctly without right side content 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -4194,14 +4706,16 @@ exports[`renders Quiz correctly without right side content 1`] = `
 
 exports[`renders assignment peer reviews correctly 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -4223,6 +4737,7 @@ exports[`renders assignment peer reviews correctly 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -4230,6 +4745,7 @@ exports[`renders assignment peer reviews correctly 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -4238,12 +4754,18 @@ exports[`renders assignment peer reviews correctly 1`] = `
   >
     <IconPeerReview />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -4254,6 +4776,7 @@ exports[`renders assignment peer reviews correctly 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -4262,6 +4785,7 @@ exports[`renders assignment peer reviews correctly 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -4289,13 +4813,17 @@ exports[`renders assignment peer reviews correctly 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -4318,14 +4846,16 @@ exports[`renders assignment peer reviews correctly 1`] = `
 
 exports[`renders correctly 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -4347,6 +4877,7 @@ exports[`renders correctly 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -4354,6 +4885,7 @@ exports[`renders correctly 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -4362,12 +4894,18 @@ exports[`renders correctly 1`] = `
   >
     <IconAssignment />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -4378,6 +4916,7 @@ exports[`renders correctly 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -4386,6 +4925,7 @@ exports[`renders correctly 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -4413,13 +4953,17 @@ exports[`renders correctly 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__score"
+          >
             <Text
               as="span"
               color="secondary"
@@ -4443,7 +4987,9 @@ exports[`renders correctly 1`] = `
               </Text>
             </Text>
           </div>
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -4466,14 +5012,16 @@ exports[`renders correctly 1`] = `
 
 exports[`renders feedback anonymously according to the assignment settings 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -4495,6 +5043,7 @@ exports[`renders feedback anonymously according to the assignment settings 1`] =
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -4502,6 +5051,7 @@ exports[`renders feedback anonymously according to the assignment settings 1`] =
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -4510,12 +5060,18 @@ exports[`renders feedback anonymously according to the assignment settings 1`] =
   >
     <IconAssignment />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -4526,6 +5082,7 @@ exports[`renders feedback anonymously according to the assignment settings 1`] =
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -4534,6 +5091,7 @@ exports[`renders feedback anonymously according to the assignment settings 1`] =
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -4561,13 +5119,17 @@ exports[`renders feedback anonymously according to the assignment settings 1`] =
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -4584,8 +5146,12 @@ exports[`renders feedback anonymously according to the assignment settings 1`] =
         </div>
       </div>
     </div>
-    <div>
-      <span>
+    <div
+      className="PlannerItem-styles__feedback"
+    >
+      <span
+        className="PlannerItem-styles__feedbackAvatar"
+      >
         <Avatar
           inline={true}
           name="?"
@@ -4594,7 +5160,9 @@ exports[`renders feedback anonymously according to the assignment settings 1`] =
           variant="circle"
         />
       </span>
-      <span>
+      <span
+        className="PlannerItem-styles__feedbackComment"
+      >
         <Text
           as="span"
           fontStyle="italic"
@@ -4611,14 +5179,16 @@ exports[`renders feedback anonymously according to the assignment settings 1`] =
 
 exports[`renders feedback if available 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -4640,6 +5210,7 @@ exports[`renders feedback if available 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -4647,6 +5218,7 @@ exports[`renders feedback if available 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -4655,12 +5227,18 @@ exports[`renders feedback if available 1`] = `
   >
     <IconAssignment />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -4671,6 +5249,7 @@ exports[`renders feedback if available 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -4679,6 +5258,7 @@ exports[`renders feedback if available 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -4706,13 +5286,17 @@ exports[`renders feedback if available 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -4729,8 +5313,12 @@ exports[`renders feedback if available 1`] = `
         </div>
       </div>
     </div>
-    <div>
-      <span>
+    <div
+      className="PlannerItem-styles__feedback"
+    >
+      <span
+        className="PlannerItem-styles__feedbackAvatar"
+      >
         <Avatar
           inline={true}
           name="Boyd Crowder"
@@ -4740,7 +5328,9 @@ exports[`renders feedback if available 1`] = `
           variant="circle"
         />
       </span>
-      <span>
+      <span
+        className="PlannerItem-styles__feedbackComment"
+      >
         <Text
           as="span"
           fontStyle="italic"
@@ -4757,14 +5347,16 @@ exports[`renders feedback if available 1`] = `
 
 exports[`renders media feedback if available 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -4786,6 +5378,7 @@ exports[`renders media feedback if available 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -4793,6 +5386,7 @@ exports[`renders media feedback if available 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -4801,12 +5395,18 @@ exports[`renders media feedback if available 1`] = `
   >
     <IconAssignment />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -4817,6 +5417,7 @@ exports[`renders media feedback if available 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -4825,6 +5426,7 @@ exports[`renders media feedback if available 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -4852,13 +5454,17 @@ exports[`renders media feedback if available 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -4875,8 +5481,12 @@ exports[`renders media feedback if available 1`] = `
         </div>
       </div>
     </div>
-    <div>
-      <span>
+    <div
+      className="PlannerItem-styles__feedback"
+    >
+      <span
+        className="PlannerItem-styles__feedbackAvatar"
+      >
         <Avatar
           inline={true}
           name="Howard Stern"
@@ -4886,7 +5496,9 @@ exports[`renders media feedback if available 1`] = `
           variant="circle"
         />
       </span>
-      <span>
+      <span
+        className="PlannerItem-styles__feedbackComment"
+      >
         <Text
           as="span"
           fontStyle="italic"
@@ -4903,14 +5515,16 @@ exports[`renders media feedback if available 1`] = `
 
 exports[`renders the end time if available 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -4932,6 +5546,7 @@ exports[`renders the end time if available 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -4939,6 +5554,7 @@ exports[`renders the end time if available 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -4947,12 +5563,18 @@ exports[`renders the end time if available 1`] = `
   >
     <IconCalendarMonth />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -4963,6 +5585,7 @@ exports[`renders the end time if available 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -4971,6 +5594,7 @@ exports[`renders the end time if available 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             iconPlacement="start"
             linkRef={[Function]}
@@ -5017,13 +5641,17 @@ exports[`renders the end time if available 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className="undefined"
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics PlannerItem-styles__with_end_time"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -5046,14 +5674,16 @@ exports[`renders the end time if available 1`] = `
 
 exports[`renders the location if available 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": "#d71f85",
             "checkedBackground": "#d71f85",
             "checkedBorderColor": "#d71f85",
@@ -5075,6 +5705,7 @@ exports[`renders the location if available 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -5082,6 +5713,7 @@ exports[`renders the location if available 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": "#d71f85",
@@ -5090,12 +5722,18 @@ exports[`renders the location if available 1`] = `
   >
     <IconAssignment />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -5106,6 +5744,7 @@ exports[`renders the location if available 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -5114,6 +5753,7 @@ exports[`renders the location if available 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -5141,13 +5781,17 @@ exports[`renders the location if available 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"
@@ -5164,7 +5808,9 @@ exports[`renders the location if available 1`] = `
         </div>
       </div>
     </div>
-    <div>
+    <div
+      className="PlannerItem-styles__location"
+    >
       <Text
         as="span"
         color="secondary"
@@ -5180,14 +5826,16 @@ exports[`renders the location if available 1`] = `
 
 exports[`renders user-created Todo correctly 1`] = `
 <div
-  className="planner-item"
+  className="PlannerItem-styles__root planner-item"
 >
-  <div>
+  <div
+    className="PlannerItem-styles__completed"
+  >
     <ApplyTheme
       immutable={false}
       theme={
         Object {
-          Symbol(CheckboxFacade__hUzfii): Object {
+          Symbol(CheckboxFacade__yyQPt): Object {
             "borderColor": null,
             "checkedBackground": null,
             "checkedBorderColor": null,
@@ -5209,6 +5857,7 @@ exports[`renders user-created Todo correctly 1`] = `
           </ScreenReaderContent>
         }
         onChange={[Function]}
+        readOnly={false}
         size="medium"
         variant="simple"
       />
@@ -5216,6 +5865,7 @@ exports[`renders user-created Todo correctly 1`] = `
   </div>
   <div
     aria-hidden="true"
+    className="PlannerItem-styles__icon"
     style={
       Object {
         "color": null,
@@ -5231,12 +5881,18 @@ exports[`renders user-created Todo correctly 1`] = `
       variant="circle"
     />
   </div>
-  <div>
-    <div>
+  <div
+    className="PlannerItem-styles__layout"
+  >
+    <div
+      className="PlannerItem-styles__innerLayout"
+    >
       <div
-        className=""
+        className="PlannerItem-styles__details PlannerItem-styles__details_no_badges"
       >
-        <div>
+        <div
+          className="PlannerItem-styles__type"
+        >
           <Text
             as="span"
             color="secondary"
@@ -5247,6 +5903,7 @@ exports[`renders user-created Todo correctly 1`] = `
           </Text>
         </div>
         <div
+          className="PlannerItem-styles__title"
           style={
             Object {
               "position": "relative",
@@ -5255,6 +5912,7 @@ exports[`renders user-created Todo correctly 1`] = `
         >
           <Link
             as="button"
+            disabled={false}
             ellipsis={true}
             href="http://example.com"
             iconPlacement="start"
@@ -5282,13 +5940,17 @@ exports[`renders user-created Todo correctly 1`] = `
         </div>
       </div>
       <div
-        className=""
+        className="PlannerItem-styles__secondary PlannerItem-styles__secondary_no_badges"
       >
-        <div />
         <div
-          className=""
+          className="PlannerItem-styles__badges"
+        />
+        <div
+          className="PlannerItem-styles__metrics"
         >
-          <div>
+          <div
+            className="PlannerItem-styles__due"
+          >
             <Text
               as="span"
               color="secondary"

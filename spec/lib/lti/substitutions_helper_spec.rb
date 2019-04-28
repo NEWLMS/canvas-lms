@@ -22,7 +22,7 @@ require_dependency "lti/substitutions_helper"
 
 module Lti
   describe SubstitutionsHelper do
-    subject { SubstitutionsHelper.new(course, root_account, user, tool, resource_type) }
+    subject { SubstitutionsHelper.new(course, root_account, user) }
 
     specs_require_sharding
 
@@ -37,8 +37,6 @@ module Lti
       Account.create!(root_account: root_account)
     }
     let(:user) { User.create! }
-    let(:tool) { nil }
-    let(:resource_type) { nil }
 
     def set_up_persistance!
       @shard1.activate { user.save! }
@@ -192,37 +190,6 @@ module Lti
         sub_account.destroy!
         roles = subject.all_roles
         expect(roles).not_to include 'urn:lti:instrole:ims/lis/Administrator'
-      end
-
-      context 'with global_navigation as resource_type' do
-        let(:actual_roles) { expected_roles - subject.all_roles('lti1_3').split(',') }
-        let(:resource_type) { 'global_navigation' }
-        let(:expected_roles) do
-          ["http://purl.imsglobal.org/vocab/lis/v2/membership/Instructor#TeachingAssistant", # only difference btwn lis2 and lti1_3 modes
-            "http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor",
-            "http://purl.imsglobal.org/vocab/lis/v2/system/person#User"]
-        end
-
-        before { allow(subject).to receive(:course_enrollments).and_return([TaEnrollment.new]) }
-
-        it "doesn't include context roles" do
-          expect(actual_roles).to match_array expected_roles
-        end
-
-        context 'as admin' do
-          let(:expected_roles) do
-            super() + ['urn:lti:instrole:ims/lis/Administrator']
-          end
-
-          before do
-            sub_account = account.sub_accounts.create!
-            sub_account.account_users.create!(user: user, role: admin_role)
-          end
-
-          it 'includes admin instroles' do
-            expect(actual_roles).to match_array expected_roles
-          end
-        end
       end
     end
 
@@ -620,7 +587,7 @@ module Lti
           cc = user.communication_channels.email.create!(path: sis_email)
           cc.user = user
           cc.save!
-          pseudonym = cc.user.pseudonyms.build(:unique_id => cc.path, :account => Account.default)
+          pseudonym = cc.user.pseudonyms.build(:unique_id => cc.path, :account => root_account)
           pseudonym.sis_communication_channel_id=cc.id
           pseudonym.communication_channel_id=cc.id
           pseudonym.sis_user_id="some_sis_id"
@@ -668,7 +635,7 @@ module Lti
           cc = user.communication_channels.email.create!(path: sis_email)
           cc.user = user
           cc.save!
-          pseudonym = cc.user.pseudonyms.build(:unique_id => cc.path, :account => Account.default)
+          pseudonym = cc.user.pseudonyms.build(:unique_id => cc.path, :account => root_account)
           pseudonym.sis_communication_channel_id=cc.id
           pseudonym.communication_channel_id=cc.id
           pseudonym.sis_user_id="some_sis_id"

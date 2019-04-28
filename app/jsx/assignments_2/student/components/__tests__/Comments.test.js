@@ -17,32 +17,45 @@
  */
 import React from 'react'
 import Comments from '../Comments'
-import CommentsContainer from '../Comments/CommentsContainer'
-import {mockAssignment, mockComments, singleComment} from '../../test-utils'
+import $ from 'jquery'
+import CommentContent from '../Comments/CommentContent'
+import {
+  commentGraphqlMock,
+  mockAssignment,
+  mockComments,
+  singleAttachment,
+  singleComment,
+  singleMediaObject
+} from '../../test-utils'
 import {MockedProvider} from 'react-apollo/test-utils'
-import {SUBMISSION_COMMENT_QUERY} from '../../assignmentData'
-import {render, waitForElement} from 'react-testing-library'
-
-const mocks = [
-  {
-    request: {
-      query: SUBMISSION_COMMENT_QUERY,
-      variables: {
-        submissionId: mockAssignment().submissionsConnection.nodes[0].id.toString()
-      }
-    },
-    result: {
-      data: {
-        submissionComments: mockComments()
-      }
-    }
-  }
-]
+import {render, waitForElement, fireEvent} from 'react-testing-library'
 
 describe('Comments', () => {
+  beforeEach(() => {
+    $('body').append('<div role="alert" id=flash_screenreader_holder />')
+  })
+
+  it('renders error alert when data returned from mutation fails', async () => {
+    const errorMock = commentGraphqlMock(mockComments())
+    errorMock[1].result = {errors: [{message: 'Error!'}]}
+    const {getByPlaceholderText, getByText} = render(
+      <MockedProvider defaultOptions={{mutate: {errorPolicy: 'all'}}} mocks={errorMock} addTypename>
+        <Comments assignment={mockAssignment()} />
+      </MockedProvider>
+    )
+    const textArea = await waitForElement(() => getByPlaceholderText('Submit a Comment'))
+    fireEvent.change(textArea, {target: {value: 'lion'}})
+    fireEvent.click(getByText('Send Comment'))
+
+    expect(
+      await waitForElement(() => getByText('Error sending submission comment'))
+    ).toBeInTheDocument()
+  })
+
   it('renders Comments', async () => {
+    const basicMock = commentGraphqlMock(mockComments())
     const {getByTestId} = render(
-      <MockedProvider mocks={mocks} addTypename>
+      <MockedProvider mocks={basicMock} addTypename>
         <Comments assignment={mockAssignment()} />
       </MockedProvider>
     )
@@ -51,8 +64,9 @@ describe('Comments', () => {
   })
 
   it('renders CommentTextArea', async () => {
+    const basicMock = commentGraphqlMock(mockComments())
     const {getByLabelText} = render(
-      <MockedProvider mocks={mocks} addTypename>
+      <MockedProvider mocks={basicMock} addTypename>
         <Comments assignment={mockAssignment()} />
       </MockedProvider>
     )
@@ -60,9 +74,54 @@ describe('Comments', () => {
     expect(await waitForElement(() => getByLabelText('Comment input box'))).toBeInTheDocument()
   })
 
+  it('notifies user when comment successfully sent', async () => {
+    const basicMock = commentGraphqlMock(mockComments())
+    const {getByPlaceholderText, getByText} = render(
+      <MockedProvider mocks={basicMock} addTypename>
+        <Comments assignment={mockAssignment()} />
+      </MockedProvider>
+    )
+    const textArea = await waitForElement(() => getByPlaceholderText('Submit a Comment'))
+    fireEvent.change(textArea, {target: {value: 'lion'}})
+    fireEvent.click(getByText('Send Comment'))
+
+    expect(await waitForElement(() => getByText('Submission comment sent'))).toBeInTheDocument()
+  })
+
+  it('renders the optimistic response with env current user', async () => {
+    const basicMock = commentGraphqlMock(mockComments())
+    const {getByPlaceholderText, getByText} = render(
+      <MockedProvider mocks={basicMock} addTypename>
+        <Comments assignment={mockAssignment()} />
+      </MockedProvider>
+    )
+    const textArea = await waitForElement(() => getByPlaceholderText('Submit a Comment'))
+    fireEvent.change(textArea, {target: {value: 'lion'}})
+    fireEvent.click(getByText('Send Comment'))
+
+    expect(await waitForElement(() => getByText('optimistic user'))).toBeInTheDocument()
+  })
+
+  it('renders the message when sent', async () => {
+    const basicMock = commentGraphqlMock(mockComments())
+    const {getAllByTestId, getByPlaceholderText, getByText} = render(
+      <MockedProvider mocks={basicMock} addTypename>
+        <Comments assignment={mockAssignment()} />
+      </MockedProvider>
+    )
+    const textArea = await waitForElement(() => getByPlaceholderText('Submit a Comment'))
+    fireEvent.change(textArea, {target: {value: 'lion'}})
+    fireEvent.click(getByText('Send Comment'))
+
+    const rows = getAllByTestId('comment-row')
+    expect(rows[0]).toHaveTextContent('lion')
+    expect(await waitForElement(() => getByText('sent user'))).toBeInTheDocument()
+  })
+
   it('renders loading indicator when loading query', async () => {
+    const basicMock = commentGraphqlMock(mockComments())
     const {getByTitle} = render(
-      <MockedProvider mocks={mocks} addTypename>
+      <MockedProvider mocks={basicMock} addTypename>
         <Comments assignment={mockAssignment()} />
       </MockedProvider>
     )
@@ -70,54 +129,72 @@ describe('Comments', () => {
   })
 
   it('catches error when api returns incorrect data', async () => {
-    const noDataMocks = [
-      {
-        request: {
-          query: SUBMISSION_COMMENT_QUERY,
-          variables: {
-            submissionId: mockAssignment().submissionsConnection.nodes[0].id.toString()
-          }
-        },
-        result: {
-          data: null
-        }
-      }
-    ]
+    const noDataMock = commentGraphqlMock(mockComments())
+    noDataMock[0].result = {data: null}
     const {getByText} = render(
-      <MockedProvider mocks={noDataMocks} addTypename>
+      <MockedProvider mocks={noDataMock} addTypename>
         <Comments assignment={mockAssignment()} />
       </MockedProvider>
     )
-    expect(
-      await waitForElement(() => getByText('Something broke unexpectedly.'))
-    ).toBeInTheDocument()
+    expect(await waitForElement(() => getByText('Sorry, Something Broke'))).toBeInTheDocument()
   })
 
   it('renders error when query errors', async () => {
-    const errorMock = [
-      {
-        request: {
-          query: SUBMISSION_COMMENT_QUERY,
-          variables: {
-            submissionId: mockAssignment().submissionsConnection.nodes[0].id.toString()
-          }
-        },
-        error: new Error('aw shucks')
-      }
-    ]
+    const errorMock = commentGraphqlMock(mockComments())
+    errorMock[0].result = null
+    errorMock[0].error = new Error('aw shucks')
     const {getByText} = render(
       <MockedProvider mocks={errorMock} removeTypename addTypename>
         <Comments assignment={mockAssignment()} />
       </MockedProvider>
     )
 
+    expect(await waitForElement(() => getByText('Sorry, Something Broke'))).toBeInTheDocument()
+  })
+
+  it('renders a media Comment', async () => {
+    const mediaComments = mockComments()
+    mediaComments.commentsConnection.nodes[0].mediaObject = singleMediaObject()
+    const mediaCommentMocks = commentGraphqlMock(mediaComments)
+
+    const {getByTitle} = render(
+      <MockedProvider mocks={mediaCommentMocks} addTypename>
+        <Comments assignment={mockAssignment()} />
+      </MockedProvider>
+    )
+
     expect(
-      await waitForElement(() => getByText('Something broke unexpectedly.'))
+      await waitForElement(() =>
+        getByTitle(mediaComments.commentsConnection.nodes[0].mediaObject.title)
+      )
     ).toBeInTheDocument()
   })
 
+  it('renders an audio only media Comment', async () => {
+    const mediaComment = singleMediaObject({
+      title: 'audio only media comment',
+      mediaType: 'audio/mp4',
+      mediaSources: {
+        __typename: 'MediaSource',
+        type: 'audio/mp4',
+        src: 'http://some-awesome-url/goes/here'
+      }
+    })
+    const audioOnlyComments = mockComments()
+    audioOnlyComments.commentsConnection.nodes[0].mediaObject = mediaComment
+    const audioOnlyMocks = commentGraphqlMock(audioOnlyComments)
+
+    const {getByTitle} = render(
+      <MockedProvider mocks={audioOnlyMocks} addTypename>
+        <Comments assignment={mockAssignment()} />
+      </MockedProvider>
+    )
+
+    expect(await waitForElement(() => getByTitle(mediaComment.title))).toBeInTheDocument()
+  })
+
   it('renders place holder text when no comments', async () => {
-    const {getByText} = render(<CommentsContainer comments={[]} />)
+    const {getByText} = render(<CommentContent comments={[]} />)
 
     expect(
       await waitForElement(() =>
@@ -127,23 +204,98 @@ describe('Comments', () => {
   })
 
   it('renders comment rows when provided', async () => {
-    const {container} = render(
-      <CommentsContainer comments={[singleComment({_id: '6'}), singleComment()]} />
-    )
-    expect(container.querySelectorAll('.comment-row-container')).toHaveLength(2)
+    const comments = [singleComment({_id: '6'}), singleComment()]
+    const {getAllByTestId} = render(<CommentContent comments={comments} />)
+    const rows = getAllByTestId('comment-row')
+
+    expect(rows).toHaveLength(comments.length)
   })
 
   it('renders shortname when shortname is provided', async () => {
-    const {getAllByText} = render(<CommentsContainer comments={[singleComment()]} />)
+    const {getAllByText} = render(<CommentContent comments={[singleComment()]} />)
     expect(getAllByText('bob builder')).toHaveLength(1)
   })
 
   it('renders Anonymous when author is not provided', async () => {
     const comment = singleComment()
     comment.author = null
-    const {getAllByText, queryAllByText} = render(<CommentsContainer comments={[comment]} />)
+    const {getAllByText, queryAllByText} = render(<CommentContent comments={[comment]} />)
 
     expect(queryAllByText('bob builder')).toHaveLength(0)
     expect(getAllByText('Anonymous')).toHaveLength(1)
+  })
+
+  it('displays a single attachment', async () => {
+    const comment = singleComment()
+    const attachment = singleAttachment()
+    comment.attachments = [attachment]
+    const {getByText} = render(<CommentContent comments={[comment]} />)
+
+    expect(
+      getByText(attachment.displayName, {selector: `a[href*='${attachment.url}']`})
+    ).toBeInTheDocument()
+  })
+
+  it('displays multiple attachments', async () => {
+    const comment = singleComment()
+    const attachment1 = singleAttachment()
+    const attachment2 = singleAttachment({
+      _id: '30',
+      displayName: 'attachment2',
+      url: 'https://second-attachment/url.com'
+    })
+    comment.attachments = [attachment1, attachment2]
+    const {getByText} = render(<CommentContent comments={[comment]} />)
+
+    expect(
+      getByText(attachment1.displayName, {selector: `a[href*='${attachment1.url}']`})
+    ).toBeInTheDocument()
+    expect(
+      getByText(attachment2.displayName, {selector: `a[href*='${attachment2.url}']`})
+    ).toBeInTheDocument()
+  })
+
+  it('does not display attachments if there are none', async () => {
+    const comment = singleComment()
+    const {container} = render(<CommentContent comments={[comment]} />)
+
+    expect(container.querySelector('a[href]')).toBeNull()
+  })
+
+  it('displays the comments in reverse chronological order', async () => {
+    const comments = [
+      ['2019-03-01T14:32:37-07:00', 'last comment'],
+      ['2019-03-03T14:32:37-07:00', 'first comment'],
+      ['2019-03-02T14:32:37-07:00', 'middle comment']
+    ].map((comment, index) =>
+      singleComment({
+        _id: index.toString(),
+        updatedAt: comment[0],
+        comment: comment[1]
+      })
+    )
+    const {getAllByTestId} = render(<CommentContent comments={comments} />)
+
+    const rows = getAllByTestId('comment-row')
+
+    expect(rows).toHaveLength(comments.length)
+    expect(rows[0]).toHaveTextContent('first comment')
+    expect(rows[0]).toHaveTextContent('Sun Mar 3, 2019 9:32pm')
+    expect(rows[1]).toHaveTextContent('middle comment')
+    expect(rows[1]).toHaveTextContent('Sat Mar 2, 2019 9:32pm')
+    expect(rows[2]).toHaveTextContent('last comment')
+    expect(rows[2]).toHaveTextContent('Fri Mar 1, 2019 9:32pm')
+  })
+
+  it('includes an icon on an attachment', async () => {
+    const comment = singleComment()
+    const attachment = singleAttachment()
+    comment.attachments = [attachment]
+
+    const {container, getByText} = render(<CommentContent comments={[comment]} />)
+
+    expect(
+      getByText(attachment.displayName, {selector: `a[href*='${attachment.url}']`})
+    ).toContainElement(container.querySelector("svg[name='IconPdf']"))
   })
 })

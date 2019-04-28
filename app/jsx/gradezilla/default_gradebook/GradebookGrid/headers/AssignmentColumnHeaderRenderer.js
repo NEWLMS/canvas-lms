@@ -25,12 +25,13 @@ function getSubmission(student, assignmentId) {
   const submission = student[`assignment_${assignmentId}`]
 
   if (!submission) {
-    return {excused: false, latePolicyStatus: null, score: null, submittedAt: null}
+    return {excused: false, latePolicyStatus: null, postedAt: null, score: null, submittedAt: null}
   }
 
   return {
     excused: submission.excused,
     latePolicyStatus: submission.late_policy_status,
+    postedAt: submission.posted_at,
     score: submission.score,
     submittedAt: submission.submitted_at
   }
@@ -54,6 +55,7 @@ function getProps(column, gradebook, options) {
     id: student.id,
     isInactive: student.isInactive,
     name: student.name,
+    sortableName: student.sortable_name,
     submission: getSubmission(student, assignmentId)
   }))
 
@@ -96,6 +98,7 @@ function getProps(column, gradebook, options) {
     },
 
     hideGradesAction: {
+      hasGradesToHide: students.some(student => student.submission.postedAt != null),
       onSelect(onExited) {
         if (gradebook.postPolicies) {
           gradebook.postPolicies.showHideAssignmentGradesTray({assignmentId, onExited})
@@ -104,7 +107,8 @@ function getProps(column, gradebook, options) {
     },
 
     postGradesAction: {
-      enabled: gradebook.postPolicies != null,
+      featureEnabled: gradebook.postPolicies != null,
+      hasGradesToPost: students.some(student => student.submission.postedAt == null),
       onSelect(onExited) {
         if (gradebook.postPolicies) {
           gradebook.postPolicies.showPostAssignmentGradesTray({assignmentId, onExited})
@@ -115,6 +119,15 @@ function getProps(column, gradebook, options) {
     removeGradebookElement: gradebook.keyboardNav.removeGradebookElement,
     reuploadSubmissionsAction: gradebook.getReuploadSubmissionsAction(assignmentId),
     setDefaultGradeAction: gradebook.getSetDefaultGradeAction(assignmentId),
+
+    showGradePostingPolicyAction: {
+      onSelect(onExited) {
+        if (gradebook.postPolicies) {
+          gradebook.postPolicies.showAssignmentPostingPolicyTray({assignmentId, onExited})
+        }
+      }
+    },
+
     showUnpostedMenuItem: gradebook.options.new_gradebook_development_enabled,
 
     sortBySetting: {

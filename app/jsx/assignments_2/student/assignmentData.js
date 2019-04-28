@@ -18,9 +18,15 @@
 import gql from 'graphql-tag'
 import {bool, number, shape, string, arrayOf} from 'prop-types'
 
-export function GetLinkStateDefaults() {
-  const defaults = {}
-  if (!window.ENV) {
+export function GetAssignmentEnvVariables() {
+  const defaults = {
+    assignmentUrl: '',
+    courseId: null,
+    currentUser: null,
+    modulePrereq: null,
+    moduleUrl: ''
+  }
+  if (!window.ENV || !Object.keys(window.ENV).length) {
     return defaults
   }
 
@@ -29,6 +35,8 @@ export function GetLinkStateDefaults() {
   }`
   defaults.assignmentUrl = `${baseUrl}/assignments`
   defaults.moduleUrl = `${baseUrl}/modules`
+  defaults.currentUser = ENV.current_user
+  defaults.courseId = ENV.context_asset_string.split('_')[1]
 
   if (ENV.PREREQS.items && ENV.PREREQS.items.length !== 0 && ENV.PREREQS.items[0].prev) {
     const prereq = ENV.PREREQS.items[0].prev
@@ -41,13 +49,40 @@ export function GetLinkStateDefaults() {
     defaults.modulePrereq = null
   }
 
-  return {env: {...defaults, __typename: 'env'}}
+  return {...defaults}
+}
+
+function submissionCommentQueryParams() {
+  return `
+    _id
+    comment
+    updatedAt
+    mediaObject {
+      id
+      title
+      mediaType
+      mediaSources {
+        src: url
+        type: contentType
+      }
+    }
+    author {
+      avatarUrl
+      shortName
+    }
+    attachments {
+      _id
+      displayName
+      mimeClass
+      url
+    }`
 }
 
 export const STUDENT_VIEW_QUERY = gql`
   query GetAssignment($assignmentLid: ID!) {
     assignment: legacyNode(type: Assignment, _id: $assignmentLid) {
       ... on Assignment {
+        _id
         description
         dueAt
         lockAt
@@ -57,16 +92,9 @@ export const STUDENT_VIEW_QUERY = gql`
         unlockAt
         gradingType
         allowedAttempts
+        allowedExtensions
         assignmentGroup {
           name
-        }
-        env @client {
-          assignmentUrl
-          moduleUrl
-          modulePrereq {
-            title
-            link
-          }
         }
         lockInfo {
           isLocked
@@ -80,6 +108,7 @@ export const STUDENT_VIEW_QUERY = gql`
           filter: {states: [unsubmitted, graded, pending_review, submitted]}
         ) {
           nodes {
+            _id
             id
             deductedPoints
             enteredGrade
@@ -100,13 +129,7 @@ export const SUBMISSION_COMMENT_QUERY = gql`
       ... on Submission {
         commentsConnection {
           nodes {
-            _id
-            comment
-            updatedAt
-            author {
-              avatarUrl
-              shortName
-            }
+            ${submissionCommentQueryParams()}
           }
         }
       }
@@ -114,9 +137,38 @@ export const SUBMISSION_COMMENT_QUERY = gql`
   }
 `
 
+export const CREATE_SUBMISSION_COMMENT = gql`
+  mutation CreateSubmissionComment($id: ID!, $comment: String!, $fileIds: [ID!]) {
+    createSubmissionComment(input: {submissionId: $id, comment: $comment, fileIds: $fileIds}) {
+      submissionComment {
+        ${submissionCommentQueryParams()}
+      }
+    }
+  }
+`
+
+export const AttachmentShape = shape({
+  _id: string,
+  displayName: string,
+  mimeClass: string,
+  url: string
+})
+
+export const MediaObjectShape = shape({
+  id: string,
+  title: string,
+  mediaType: string,
+  mediaSources: shape({
+    src: string,
+    type: string
+  })
+})
+
 export const CommentShape = shape({
   _id: string,
+  attachments: arrayOf(AttachmentShape),
   comment: string,
+  mediaObject: MediaObjectShape,
   author: shape({
     avatarUrl: string,
     shortName: string
@@ -125,6 +177,7 @@ export const CommentShape = shape({
 })
 
 export const StudentAssignmentShape = shape({
+  _id: string,
   description: string,
   dueAt: string,
   lockAt: string,
@@ -134,12 +187,17 @@ export const StudentAssignmentShape = shape({
   unlockAt: string,
   gradingType: string,
   allowedAttempts: number,
+  allowedExtensions: arrayOf(string),
   assignmentGroup: shape({
     name: string.isRequired
   }).isRequired,
   env: shape({
     assignmentUrl: string.isRequired,
     moduleUrl: string.isRequired,
+    currentUser: shape({
+      display_name: string,
+      avatar_image_url: string
+    }),
     modulePrereq: shape({
       title: string.isRequired,
       link: string.isRequired
@@ -169,5 +227,5 @@ export const StudentAssignmentShape = shape({
         submissionStatus: string
       })
     ).isRequired
-  }).isRequired
+  })
 })

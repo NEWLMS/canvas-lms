@@ -42,6 +42,7 @@ module SpeedGrader
                                   grading_period_id excused updated_at)
 
       submission_json_fields << (anonymous_students?(current_user: @current_user, assignment: @assignment) ? :anonymous_id : :user_id)
+      submission_json_fields << :posted_at if @course.feature_enabled?(:post_policies)
 
       attachment_json_fields = %i(id comment_id content_type context_id context_type display_name
                                   filename mime_class size submitter_id workflow_state)
@@ -61,6 +62,7 @@ module SpeedGrader
       )
       res['anonymize_students'] = @assignment.anonymize_students?
       res['anonymize_graders'] = !@assignment.can_view_other_grader_identities?(@current_user)
+      res['post_manually'] = @assignment.post_manually? if @course.feature_enabled?(:post_policies)
 
       # include :provisional here someday if we need to distinguish
       # between provisional and real comments (also in
@@ -241,6 +243,7 @@ module SpeedGrader
                     json[:attachment][:crocodoc_url] = a.crocodoc_url(@current_user, url_opts)
                     json[:attachment][:submitted_to_crocodoc] = a.crocodoc_document.present?
                     json[:attachment][:hijack_crocodoc_session] = a.crocodoc_document.present? && @should_migrate_to_canvadocs
+                    json[:attachment][:upload_status] = AttachmentUploadStatus.upload_status(a)
                   end
                 end
               end

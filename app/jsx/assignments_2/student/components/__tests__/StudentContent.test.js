@@ -20,7 +20,7 @@ import React from 'react'
 import {mockAssignment, mockComments} from '../../test-utils'
 import StudentContent from '../StudentContent'
 import {MockedProvider} from 'react-apollo/test-utils'
-import {SUBMISSION_COMMENT_QUERY} from '../../assignmentData'
+import {SUBMISSION_COMMENT_QUERY, CREATE_SUBMISSION_COMMENT} from '../../assignmentData'
 import {waitForElement, render, fireEvent} from 'react-testing-library'
 
 const mocks = [
@@ -36,6 +36,17 @@ const mocks = [
         submissionComments: mockComments()
       }
     }
+  },
+  {
+    request: {
+      query: CREATE_SUBMISSION_COMMENT,
+      variables: {
+        submissionId: mockAssignment().submissionsConnection.nodes[0].id.toString()
+      }
+    },
+    result: {
+      data: null
+    }
   }
 ]
 
@@ -49,7 +60,7 @@ describe('Assignment Student Content View', () => {
   it('renders the student header if the assignment is locked', () => {
     const assignment = mockAssignment({lockInfo: {isLocked: true}})
     const {getByTestId} = render(<StudentContent assignment={assignment} />)
-    expect(getByTestId('assignments-2-student-header')).toBeInTheDocument()
+    expect(getByTestId('assignment-student-header-normal')).toBeInTheDocument()
   })
 
   it('renders the assignment details and student content tab if the assignment is unlocked', () => {
@@ -63,10 +74,9 @@ describe('Assignment Student Content View', () => {
 
   it('renders the availability dates if the assignment is locked', () => {
     const assignment = mockAssignment({lockInfo: {isLocked: true}})
-    const {queryByRole, getByText, queryByText} = render(<StudentContent assignment={assignment} />)
+    const {queryByRole, getByText} = render(<StudentContent assignment={assignment} />)
 
     expect(queryByRole('tablist')).not.toBeInTheDocument()
-    expect(queryByText('Details')).not.toBeInTheDocument()
     expect(getByText('Availability Dates')).toBeInTheDocument()
   })
 

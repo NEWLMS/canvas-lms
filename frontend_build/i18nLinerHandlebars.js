@@ -25,7 +25,6 @@ const Handlebars = require('handlebars')
 const {pick} = require('lodash')
 const {EmberHandlebars} = require('ember-template-compiler')
 const ScopedHbsExtractor = require('i18nliner-canvas/js/scoped_hbs_extractor')
-require('babel-polyfill')
 const {allFingerprintsFor} = require('brandable_css/lib/main')
 const PreProcessor = require('i18nliner-handlebars/dist/lib/pre_processor').default
 require('i18nliner-canvas/js/scoped_hbs_pre_processor')
@@ -147,7 +146,7 @@ const buildPartialRequirements = partialPaths => {
   return requirements
 }
 
-module.exports = function i18nLinerHandlebarsLoader(source) {
+function i18nLinerHandlebarsLoader(source) {
   this.cacheable()
   const name = resourceName(this.resourcePath)
   const dependencies = ['handlebars/runtime']
@@ -186,4 +185,14 @@ module.exports = function i18nLinerHandlebarsLoader(source) {
     partialRegistration
   )
   return compiledTemplate
+}
+
+module.exports = i18nLinerHandlebarsLoader
+
+module.exports.compile = (source, path) => {
+  const context = {
+    cacheable: () => {},
+    resourcePath: path
+  }
+  return i18nLinerHandlebarsLoader.call(context, source)
 }

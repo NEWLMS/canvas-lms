@@ -20,31 +20,35 @@ import React from 'react'
 import {TextArea, TextInput} from '@instructure/ui-forms'
 import View from '@instructure/ui-layout/lib/components/View'
 import {Button} from '@instructure/ui-buttons'
-import {func} from 'prop-types'
+import {func, string} from 'prop-types'
 
 function ErrorTextInputForm(props) {
   return (
-    <View>
+    <View margin="small">
       <TextArea
-        margin="small"
         onChange={props.handleChangeCommentBox}
         label={I18n.t('What happened?')}
+        value={props.textAreaComment}
       />
       <View margin="small">
         <TextInput
-          display="block"
           onChange={props.handleChangeOptionalEmail}
           label={I18n.t('Email Address (Optional)')}
+          value={props.optionalEmail}
         />
       </View>
-      <Button margin="small" variant="primary" onClick={props.handleSubmitErrorReport}>
-        {I18n.t('Submit')}
-      </Button>
+      <View textAlign="end" display="block">
+        <Button margin="small 0" variant="primary" onClick={props.handleSubmitErrorReport}>
+          {I18n.t('Submit')}
+        </Button>
+      </View>
     </View>
   )
 }
 
 ErrorTextInputForm.propTypes = {
+  textAreaComment: string.isRequired,
+  optionalEmail: string.isRequired,
   handleChangeCommentBox: func.isRequired,
   handleSubmitErrorReport: func.isRequired,
   handleChangeOptionalEmail: func.isRequired

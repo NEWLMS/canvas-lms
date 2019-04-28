@@ -25,7 +25,7 @@ module Canvas::Migration::Helpers
             ['quizzes', -> { I18n.t('lib.canvas.migration.quizzes', 'Quizzes') }],
             ['assessment_question_banks', -> { I18n.t('lib.canvas.migration.assessment_question_banks', 'Question Banks') }],
             ['discussion_topics', -> { I18n.t('lib.canvas.migration.discussion_topics', 'Discussion Topics') }],
-            ['wiki_pages', -> { I18n.t('lib.canvas.migration.wikis', 'Wiki Pages') }],
+            ['wiki_pages', -> { I18n.t('lib.canvas.migration.wikis', 'Pages') }],
             ['context_external_tools', -> { I18n.t('lib.canvas.migration.external_tools', 'External Tools') }],
             ['tool_profiles', -> { I18n.t('lib.canvas.migration.tool_profiles', 'Tool Profiles') }],
             ['announcements', -> { I18n.t('lib.canvas.migration.announcements', 'Announcements') }],
@@ -316,7 +316,7 @@ module Canvas::Migration::Helpers
 
       hash = {type: type, title: title}
       if @migration
-        mig_id = CC::CCHelper.create_key(item)
+        mig_id = (@migration.content_export || CC::CCHelper).create_key(item)
         hash[:migration_id] = mig_id
         hash[:property] = "#{property_prefix}[#{type}][id_#{mig_id}]"
       else

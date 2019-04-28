@@ -66,6 +66,18 @@ function normalizeFileData(file) {
   }
 }
 
+function throwConnectionError (error) {
+    if (error.name === 'TypeError') {
+      throw new Error(`Failed to fetch from the canvas-rce-api.
+        Did you forget to start it or configure it?
+        Details can be found at https://github.com/instructure/canvas-rce-api
+      `)
+    } else {
+      throw error
+    }
+
+}
+
 class RceApiSource {
   constructor(options = {}) {
     this.jwt = options.jwt
@@ -76,7 +88,7 @@ class RceApiSource {
   getSession() {
     const headers = headerFor(this.jwt)
     const uri = this.baseUri('session')
-    return this.apiFetch(uri, headers)
+    return this.apiFetch(uri, headers).catch(throwConnectionError)
   }
 
   // initial state of a collection is empty, not loading, with bookmark set to
@@ -246,6 +258,7 @@ class RceApiSource {
       })
       .then(checkStatus)
       .then(parseResponse)
+      .catch(throwConnectionError)
   }
 
   // @private
@@ -275,6 +288,7 @@ class RceApiSource {
       })
       .then(checkStatus)
       .then(parseResponse)
+      .catch(throwConnectionError)
   }
 
   // @private
@@ -304,7 +318,7 @@ class RceApiSource {
     }
     if (typeof host !== 'string') {
       host = ''
-    } else if (host.substr(0, 4) !== 'http') {
+    } else if (host && host.substr(0, 4) !== 'http') {
       host = `//${host}`
       let windowHandle = windowOverride || (typeof window !== 'undefined' ? window : undefined)
       if (

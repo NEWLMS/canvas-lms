@@ -26,7 +26,7 @@ import I18n from 'i18n!editor'
 import {send} from '../shared/rce/RceCommandShim'
 import TinyMCEContentItem from 'tinymce_plugins/instructure_external_tools/TinyMCEContentItem'
 import FlexItem from '@instructure/ui-layout/lib/components/Flex/FlexItem'
-import {processContentItemsForEditor} from '../deep_linking/ContentItemProcessor'
+import processEditorContentItems from '../deep_linking/processors/processEditorContentItems'
 
 const EMPTY_BUTTON = {
   height: 300,
@@ -104,9 +104,14 @@ export default class ExternalToolDialog extends React.Component {
   handleExternalContentReady = (ev, data) => {
     const {editor, win} = this.props
     const contentItems = data.contentItems
-    for (let i = 0, len = contentItems.length; i < len; ++i) {
-      const code = TinyMCEContentItem.fromJSON(contentItems[i]).codePayload
-      send(win.$(`#${editor.id}`), 'insert_code', code)
+    if (contentItems.length === 1 && contentItems[0]['@type'] === 'lti_replace') {
+      const code = contentItems[0].text
+      send(win.$(`#${editor.id}`), 'set_code', code)
+    } else {
+      for (let i = 0, len = contentItems.length; i < len; ++i) {
+        const code = TinyMCEContentItem.fromJSON(contentItems[i]).codePayload
+        send(win.$(`#${editor.id}`), 'insert_code', code)
+      }
     }
     this.close()
   }
@@ -115,7 +120,7 @@ export default class ExternalToolDialog extends React.Component {
     const {editor, deepLinkingOrigin} = this.props
     // Only accept messages from the same origin
     if (ev.origin === deepLinkingOrigin) {
-      processContentItemsForEditor(ev, editor, this)
+      processEditorContentItems(ev, editor, this)
     }
   }
 

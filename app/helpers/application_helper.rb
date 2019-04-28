@@ -147,31 +147,6 @@ module ApplicationHelper
     object.grants_any_right?(user, session, *actions)
   end
 
-  # Loads up the lists of files needed for the wiki_sidebar.  Called from
-  # within the cached code so won't be loaded unless needed.
-  def load_wiki_sidebar
-    return if @wiki_sidebar_data
-    logger.warn "database lookups happening in view code instead of controller code for wiki sidebar (load_wiki_sidebar)"
-    @wiki_sidebar_data = {}
-    includes = [:active_assignments, :active_discussion_topics, :active_quizzes, :active_context_modules]
-    includes.each{|i| @wiki_sidebar_data[i] = @context.send(i).limit(150) if @context.respond_to?(i) }
-    includes.each{|i| @wiki_sidebar_data[i] ||= [] }
-    if @context.respond_to?(:wiki)
-      limit = Setting.get('wiki_sidebar_item_limit', 1000000).to_i
-      @wiki_sidebar_data[:wiki_pages] = @context.wiki_pages.active.order(:title).select('title, url, workflow_state').limit(limit)
-      @wiki_sidebar_data[:wiki] = @context.wiki
-    end
-    @wiki_sidebar_data[:wiki_pages] ||= []
-    if can_do(@context, @current_user, :manage_files, :read_as_admin)
-      @wiki_sidebar_data[:root_folders] = Folder.root_folders(@context)
-    elsif @context.is_a?(Course) && !@context.tab_hidden?(Course::TAB_FILES)
-      @wiki_sidebar_data[:root_folders] = Folder.root_folders(@context).reject{|folder| folder.locked? || folder.hidden}
-    else
-      @wiki_sidebar_data[:root_folders] = []
-    end
-    @wiki_sidebar_data
-  end
-
   # See `js_base_url`
   def use_optimized_js?
     if params.key?(:optimized_js)
@@ -665,7 +640,7 @@ module ApplicationHelper
   def active_brand_config_url(type, opts={})
     path = active_brand_config(opts).try("public_#{type}_path")
     path ||= BrandableCSS.public_default_path(type, @current_user&.prefers_high_contrast? || opts[:force_high_contrast])
-    "#{Canvas::Cdn.config.host}/#{path}"
+    "#{Canvas::Cdn.add_brotli_to_host_if_supported(request)}/#{path}"
   end
 
   def brand_config_account(opts={})
@@ -858,7 +833,8 @@ module ApplicationHelper
   end
 
   def include_custom_meta_tags
-    add_csp_meta_tags
+    add_csp_for_root
+    js_env(csp: csp_iframe_attribute) if csp_enforced?
 
     output = []
     if @meta_tags.present?
@@ -873,9 +849,34 @@ module ApplicationHelper
     output.join("\n").html_safe.presence
   end
 
-  def add_csp_meta_tags
-    csp_context =
-      if @context.is_a?(Course)
+  def csp_context_is_submission?
+    csp_context
+    @csp_context_is_submission
+  end
+
+  def csp_context
+    @csp_context ||= begin
+      @csp_context_is_submission = false
+      attachment = @attachment || @context
+      if attachment.is_a?(Attachment)
+        if attachment.context_type == 'User'
+          # search for an attachment association
+          aas = attachment.attachment_associations.where(context_type: 'Submission').preload(:context).to_a
+          ActiveRecord::Associations::Preloader.new.preload(aas.map(&:submission), assignment: :context)
+          courses = aas.map { |aa| aa.submission.assignment.course }.uniq
+          if courses.length == 1
+            @csp_context_is_submission = true
+            courses.first
+          end
+        elsif attachment.context_type == 'Submission'
+          @csp_context_is_submission = true
+          attachment.submission.assignment.course
+        elsif attachment.context_type == 'Course'
+          attachment.course
+        else
+          brand_config_account
+        end
+      elsif @context.is_a?(Course)
         @context
       elsif @context.is_a?(Group) && @context.context.is_a?(Course)
         @context.context
@@ -884,16 +885,62 @@ module ApplicationHelper
       else
         brand_config_account
       end
-    return unless csp_context &&
-      csp_context.root_account.feature_enabled?(:javascript_csp) &&
-      csp_context.csp_enabled?
+    end
+  end
 
-    domains = %w{'self' 'unsafe-eval' 'unsafe-inline'} + csp_context.csp_whitelisted_domains
-    @meta_tags ||= []
-    @meta_tags << {
-      "http-equiv" => "Content-Security-Policy",
-      "content" => "script-src #{domains.join(" ")}"
-    }
+  def csp_enabled?
+    csp_context&.root_account&.feature_enabled?(:javascript_csp)
+  end
+
+  def csp_enforced?
+    csp_enabled? && csp_context.csp_enabled?
+  end
+
+  def csp_report_uri
+    @csp_report_uri ||= begin
+      if (host = csp_context.root_account.csp_logging_config['host'])
+        "; report-uri #{host}report/#{csp_context.root_account.global_id}"
+      else
+        ""
+      end
+    end
+  end
+
+  def csp_header
+    header = "Content-Security-Policy"
+    header << "-Report-Only" unless csp_enforced?
+
+    header
+  end
+
+  def include_files_domain_in_csp
+    # TODO: make this configurable per-course, and depending on csp_context_is_submission?
+    true
+  end
+
+  def add_csp_for_root
+    return unless csp_enabled?
+    return if csp_report_uri.empty? && !csp_enforced?
+
+    # we iframe all files from the files domain into canvas, so we always have to include the files domain here
+    domains = csp_context.csp_whitelisted_domains(request, include_files: true, include_tools: true).join(' ')
+    headers[csp_header] = "frame-src 'self' #{domains}#{csp_report_uri}"
+  end
+
+  def add_csp_for_file
+    return unless csp_enabled?
+    return if csp_report_uri.empty? && !csp_enforced?
+    headers[csp_header] = csp_iframe_attribute + csp_report_uri
+  end
+
+  def csp_iframe_attribute
+    frame_domains = csp_context.csp_whitelisted_domains(request, include_files: include_files_domain_in_csp, include_tools: true)
+    script_domains = csp_context.csp_whitelisted_domains(request, include_files: include_files_domain_in_csp, include_tools: false)
+    if include_files_domain_in_csp
+      frame_domains = %w{'self'} + frame_domains
+      script_domains = %w{'self' 'unsafe-eval' 'unsafe-inline'} + script_domains
+    end
+    "frame-src #{frame_domains.join(' ')}; script-src #{script_domains.join(' ')}"
   end
 
   # Returns true if the current_path starts with the given value
@@ -935,6 +982,13 @@ module ApplicationHelper
   def planner_enabled?
     !!(@current_user && @domain_root_account&.feature_enabled?(:student_planner) &&
       @current_user.has_student_enrollment?)
+  end
+
+  def will_paginate(collection, options = {})
+    unless options[:renderer]
+      options = options.merge :renderer => WillPaginateHelper::AccessibleLinkRenderer
+    end
+    super
   end
 
   def generate_access_verifier(return_url: nil)
